@@ -1,0 +1,58 @@
+/* Komodo Design System — SaaS Premium × Cyberpunk Neon Minimal
+   Inspiration: Stripe, Linear, Vercel. No Bootstrap blue, no heavy shadows. */
+
+:root {
+  /* Accent — neon used sparingly (active states, key CTAs) */
+  --primary: #00FF88;
+  --primary-dim: rgba(0, 255, 136, 0.08);
+  --primary-border: rgba(0, 255, 136, 0.35);
+  --primary-line: 0 1px 0 0 var(--primary);
+
+  --secondary: #FF3366;
+  --secondary-dim: rgba(255, 51, 102, 0.08);
+  --secondary-border: rgba(255, 51, 102, 0.35);
+
+  --info: #00D4FF;
+  --info-dim: rgba(0, 212, 255, 0.08);
+  --info-border: rgba(0, 212, 255, 0.35);
+
+  /* Surfaces */
+  --bg-dark: #09090b;
+  --bg-elevated: #0f0f11;
+  --card-dark: #141416;
+  --card-hover: #18181b;
+
+  /* Borders — neutral by default, accent on interaction */
+  --border-default: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.1);
+  --card-border: var(--border-default);
+  --card-border-hover: var(--border-strong);
+
+  /* Type */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-dim: #52525b;
+
+  /* Sharp, professional radius (Linear/Vercel) */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --transition-fast: 0.12s ease;
+  --transition-smooth: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-page: 0.28s ease-out;
+  --transition-card: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout breakpoints (use in JS if needed; CSS uses same values) */
+  --layout-mobile: 767px;
+  --layout-tablet: 768px;
+  --layout-desktop: 1024px;
+  --layout-wide: 1280px;
+
+  /* Spacing */
+  --space-mobile-y: 1.5rem;
+  --space-section-mobile: 1.5rem;
+}

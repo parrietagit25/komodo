@@ -1,0 +1,148 @@
+/* Responsive layout system
+   Desktop: sidebar fixed left, content right
+   Mobile (<768px): hide sidebar, top header + logo + menu, drawer + overlay */
+
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+/* ——— Desktop: sidebar left, content right ——— */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 1.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: padding var(--transition-card);
+}
+
+/* ——— Mobile header (visible only < 768px) ——— */
+.mobile-header {
+  display: none;
+}
+
+.mobile-header-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  transition: background var(--transition-card), border-color var(--transition-card);
+}
+
+.mobile-header-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary);
+}
+
+.mobile-header-menu-btn:active {
+  transform: scale(0.98);
+}
+
+.mobile-header-menu-icon {
+  width: 22px;
+  height: 14px;
+  position: relative;
+  display: block;
+}
+
+.mobile-header-menu-icon::before,
+.mobile-header-menu-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.mobile-header-menu-icon::before {
+  top: 0;
+}
+
+.mobile-header-menu-icon::after {
+  bottom: 0;
+}
+
+.mobile-header-menu-icon {
+  box-shadow: 0 6px 0 currentColor;
+}
+
+.mobile-header-brand {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* ——— Overlay: dark background when drawer open ——— */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.sidebar-overlay[data-open="true"] {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ——— Mobile (< 768px) ——— */
+@media (max-width: 767px) {
+  .main-layout {
+    flex-direction: column;
+  }
+
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    width: 100%;
+    max-width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 1.25rem 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .main-content > * + * {
+    margin-top: var(--space-section-mobile, 1.5rem);
+  }
+}
+
+@media (min-width: 768px) {
+  .sidebar-overlay {
+    display: none !important;
+  }
+}
+
+@media (min-width: 900px) {
+  .main-content {
+    padding: 2rem;
+  }
+}

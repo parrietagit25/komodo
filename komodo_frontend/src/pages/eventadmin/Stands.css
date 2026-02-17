@@ -1,0 +1,369 @@
+/* Stands — Dark Neon Theme, same as Events */
+
+.stands-page {
+  animation: pageFadeIn var(--transition-page) forwards;
+}
+
+.stands-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stands-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.25rem 0;
+}
+
+.stands-subtitle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.btn-create-stand {
+  flex-shrink: 0;
+  transition: box-shadow var(--transition-smooth), transform var(--transition-fast);
+}
+
+.btn-create-stand:hover:not(:disabled) {
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.35);
+  transform: translateY(-1px);
+}
+
+.stands-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: var(--secondary-dim);
+  border: 1px solid var(--secondary-border);
+  border-radius: var(--radius-md);
+  color: var(--secondary);
+  font-size: 0.875rem;
+}
+
+.stands-error-dismiss {
+  flex-shrink: 0;
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.stands-error-dismiss:hover {
+  opacity: 1;
+}
+
+.stands-card {
+  background: #141416;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+  overflow: hidden;
+  transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.stands-card:hover {
+  border-color: var(--card-border-hover);
+}
+
+.stands-loading,
+.stands-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.stands-table-wrap {
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.stands-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.stands-table th,
+.stands-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.stands-table th {
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.stands-table tbody tr:hover {
+  background: var(--card-hover);
+}
+
+.stands-table td {
+  color: var(--text-primary);
+}
+
+.stands-table .cell-name {
+  font-weight: 500;
+}
+
+.stands-table .cell-muted {
+  color: var(--text-muted);
+}
+
+.stands-table .cell-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stands-table .th-actions {
+  text-align: right;
+}
+
+.stands-table .table-btn {
+  padding: 0.35rem 0.65rem;
+  margin-left: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast),
+    background-color var(--transition-fast), box-shadow var(--transition-smooth);
+}
+
+.stands-table .table-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  background: var(--primary-dim);
+}
+
+.stands-table .table-btn-edit:hover:not(:disabled) {
+  border-color: var(--primary-border);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.15);
+}
+
+.stands-table .table-btn-deactivate:hover:not(:disabled) {
+  border-color: var(--secondary-border);
+  color: var(--secondary);
+  background: var(--secondary-dim);
+}
+
+.stands-table .table-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stands-table .status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.stands-table .status-active {
+  background: var(--primary-dim);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+
+.stands-table .status-inactive {
+  background: var(--secondary-dim);
+  color: var(--text-muted);
+  border: 1px solid var(--border-default);
+}
+
+.stand-modal .form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+.stand-modal .form-textarea {
+  resize: vertical;
+  min-height: 4rem;
+}
+
+/* Modal base (portal: .stands-page-modal-backdrop when rendered to body) */
+.stands-page .modal-backdrop,
+.stands-page-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+  overflow: hidden;
+  animation: backdropIn 0.2s ease;
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.stands-page .modal-content,
+.modal-content.stand-modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: #141416;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.4);
+  animation: modalIn 0.25s ease;
+  margin: auto;
+}
+
+.stands-page .modal-content::-webkit-scrollbar,
+.modal-content.stand-modal::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stands-page .modal-header,
+.stands-page-modal-backdrop .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.stands-page .modal-title,
+.stands-page-modal-backdrop .modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.stands-page .modal-close,
+.stands-page-modal-backdrop .modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.stands-page .modal-close:hover {
+  color: var(--text-primary);
+  border-color: var(--primary-border);
+}
+
+.stands-page .modal-form,
+.stands-page-modal-backdrop .modal-form {
+  padding: 1.5rem;
+}
+
+.stands-page .form-label,
+.stands-page-modal-backdrop .form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.stands-page .form-label span:first-child,
+.stands-page-modal-backdrop .form-label span:first-child {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.stands-page .form-input,
+.stands-page-modal-backdrop .form-input {
+  width: 100%;
+  padding: 0.6rem 0.875rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  transition: border-color var(--transition-smooth), box-shadow var(--transition-fast);
+}
+
+.stands-page .form-input:focus,
+.stands-page-modal-backdrop .form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary-border);
+}
+
+.stands-page .form-input::placeholder,
+.stands-page-modal-backdrop .form-input::placeholder {
+  color: var(--text-dim);
+}
+
+.stands-page .form-label-checkbox,
+.stands-page-modal-backdrop .form-label-checkbox {
+  flex-direction: row;
+  align-items: center;
+}
+
+.stands-page .form-label-checkbox input,
+.stands-page-modal-backdrop .form-label-checkbox input {
+  margin-right: 0.5rem;
+}
+
+.stands-page .form-label-checkbox span,
+.stands-page-modal-backdrop .form-label-checkbox span {
+  order: 1;
+}
+
+.stands-page .modal-actions,
+.stands-page-modal-backdrop .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+}

@@ -1,0 +1,54 @@
+/* Minimal neon accent — line/border only, no heavy glow */
+
+/* Active / focus: thin accent line (Stripe/Linear style) */
+.accent-line {
+  box-shadow: inset 0 -1px 0 0 var(--border-default);
+  transition: box-shadow var(--transition-smooth);
+}
+
+.accent-line:hover,
+.accent-line:focus-within {
+  box-shadow: inset 0 -1px 0 0 var(--primary-border);
+}
+
+/* Card / panel: neutral border, subtle hover */
+.border-glow {
+  border: 1px solid var(--card-border);
+  transition: border-color var(--transition-smooth), background-color var(--transition-fast);
+}
+
+.border-glow:hover,
+.border-glow:focus-within {
+  border-color: var(--card-border-hover);
+}
+
+/* Optional: very subtle glow for primary CTA only */
+.glow-primary {
+  box-shadow: 0 0 0 1px var(--primary-border);
+}
+
+.glow-primary:hover:not(:disabled),
+.glow-primary:focus-visible {
+  box-shadow: 0 0 0 1px var(--primary), 0 0 12px rgba(0, 255, 136, 0.15);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 0 1px var(--secondary-border);
+}
+
+.glow-secondary:hover:not(:disabled) {
+  box-shadow: 0 0 0 1px var(--secondary), 0 0 12px rgba(255, 51, 102, 0.12);
+}
+
+.glow-info {
+  box-shadow: 0 0 0 1px var(--info-border);
+}
+
+/* Text accent — subtle, not full glow */
+.text-glow-primary {
+  color: var(--primary);
+}
+
+.text-glow-secondary {
+  color: var(--secondary);
+}

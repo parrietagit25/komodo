@@ -1,0 +1,52 @@
+/* Clean cards — neutral border, micro lift on hover */
+
+.card {
+  background: var(--card-dark);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--card-border);
+  transition:
+    transform var(--transition-card),
+    border-color var(--transition-card),
+    background-color var(--transition-card),
+    box-shadow var(--transition-card);
+}
+
+.card:hover,
+.card-glow:hover {
+  transform: translateY(-2px);
+  border-color: var(--card-border-hover);
+  background: var(--card-hover);
+}
+
+.card-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.card-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.card-body {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.card-body + .card-body {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 767px) {
+  .card {
+    width: 100%;
+    min-width: 0;
+    padding: 1rem 1.25rem;
+  }
+}

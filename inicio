@@ -1,0 +1,9 @@
+para iniciar el fronend 
+npm run dev
+hay que estar en la ruta 
+C:\Users\ADMIN\Desktop\komodo\komodo_frontend
+
+para iniciar el backend 
+docker-compose up --build
+ruta 
+C:\Users\ADMIN\Desktop\komodo

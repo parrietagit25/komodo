@@ -1,0 +1,24 @@
+/* react-hot-toast — dark #141416, subtle neon border, rounded, smooth entrance */
+
+.toast-container {
+  --toast-bg: #141416;
+  --toast-success: rgba(0, 255, 136, 0.35);
+  --toast-error: rgba(255, 51, 102, 0.35);
+  --toast-loading: rgba(0, 212, 255, 0.35);
+}
+
+/* Smooth entrance */
+.toast-container > div {
+  animation: toastSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

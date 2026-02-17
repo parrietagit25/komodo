@@ -1,0 +1,93 @@
+/* Premium flat buttons — sharp radius, no bounce, minimal shadow */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+.btn-loading .btn-spinner {
+  margin-right: 0.35rem;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--bg-dark);
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #00e678;
+  filter: none;
+}
+
+.btn-secondary {
+  background: var(--secondary-dim);
+  color: var(--secondary);
+  border: 1px solid var(--secondary-border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 51, 102, 0.14);
+}
+
+.btn-danger {
+  background: var(--secondary-dim);
+  color: var(--secondary);
+  border: 1px solid var(--secondary-border);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: rgba(255, 51, 102, 0.2);
+  border-color: var(--secondary);
+}
+
+.btn-info {
+  background: var(--info-dim);
+  color: var(--info);
+  border: 1px solid var(--info-border);
+}
+
+.btn-info:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.12);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--card-hover);
+  border-color: var(--border-strong);
+}

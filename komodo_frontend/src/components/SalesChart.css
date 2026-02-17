@@ -1,0 +1,189 @@
+/* Sales chart — 3 lines, transparent dark bg, subtle grid, dark tooltip, glow dots */
+
+.sales-chart-wrapper {
+  background: transparent;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: 1rem 1rem 1.25rem;
+  margin-bottom: 2rem;
+  min-height: 320px;
+}
+
+.sales-chart-wrapper:not(.sales-chart-skeleton):not(.sales-chart-empty):not(.sales-chart-error) {
+  transition: transform var(--transition-card, 0.25s ease);
+}
+
+.sales-chart-wrapper:not(.sales-chart-skeleton):not(.sales-chart-empty):not(.sales-chart-error):hover {
+  transform: translateY(-2px);
+}
+
+.sales-chart-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+/* Grid — subtle dark gray */
+.sales-chart-grid line {
+  stroke: rgba(255, 255, 255, 0.06);
+}
+
+/* Active dot — neon glow per line */
+.sales-chart-dot-sales {
+  filter: drop-shadow(0 0 6px #00FF88) drop-shadow(0 0 12px rgba(0, 255, 136, 0.5));
+}
+
+.sales-chart-dot-commission {
+  filter: drop-shadow(0 0 6px #FF3366) drop-shadow(0 0 12px rgba(255, 51, 102, 0.5));
+}
+
+.sales-chart-dot-net {
+  filter: drop-shadow(0 0 6px #00D4FF) drop-shadow(0 0 12px rgba(0, 212, 255, 0.5));
+}
+
+/* Tooltip — dark #141416, row color from --line-color */
+.sales-chart-tooltip {
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md, 0.5rem);
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  min-width: 160px;
+}
+
+.sales-chart-tooltip-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.sales-chart-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  margin-top: 0.25rem;
+}
+
+.sales-chart-tooltip-row span:first-child {
+  color: var(--text-muted);
+}
+
+.sales-chart-tooltip-row span:last-child {
+  color: var(--line-color, #00FF88);
+  font-weight: 600;
+}
+
+/* Legend — dark theme */
+.sales-chart-legend .recharts-legend-item-text {
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+}
+
+.sales-chart-legend .recharts-legend-item {
+  margin-right: 1rem;
+}
+
+/* Loading skeleton */
+.sales-chart-skeleton {
+  display: flex;
+  flex-direction: column;
+}
+
+.sales-chart-skeleton-title {
+  height: 1.25rem;
+  width: 140px;
+  background: linear-gradient(
+    90deg,
+    var(--border-strong, rgba(255,255,255,0.08)) 25%,
+    var(--border-default, rgba(255,255,255,0.12)) 50%,
+    var(--border-strong, rgba(255,255,255,0.08)) 75%
+  );
+  background-size: 200% 100%;
+  animation: sales-chart-skeleton-shine 1.2s ease-in-out infinite;
+  border-radius: var(--radius-sm, 4px);
+  margin-bottom: 1rem;
+}
+
+.sales-chart-skeleton-chart {
+  flex: 1;
+  min-height: 240px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.02) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: sales-chart-skeleton-shine 1.5s ease-in-out infinite 0.2s;
+  border-radius: var(--radius-md, 6px);
+  position: relative;
+  overflow: hidden;
+}
+
+.sales-chart-skeleton-line {
+  position: absolute;
+  bottom: 20%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 136, 0.2),
+    rgba(0, 255, 136, 0.4),
+    rgba(0, 255, 136, 0.2),
+    transparent
+  );
+  border-radius: 2px;
+}
+
+@keyframes sales-chart-skeleton-shine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty state */
+.sales-chart-empty-message {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  margin: 0;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+/* Error state */
+.sales-chart-error {
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  padding: 1rem 1.25rem;
+}
+
+.sales-chart-error p {
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .sales-chart-wrapper {
+    padding: 0.75rem;
+    min-height: 280px;
+  }
+
+  .sales-chart-wrapper .recharts-wrapper {
+    margin: 0 auto;
+  }
+
+  .sales-chart-legend .recharts-legend-item {
+    margin-right: 0.75rem;
+  }
+
+  .sales-chart-legend .recharts-legend-item-text {
+    font-size: 0.75rem;
+  }
+}

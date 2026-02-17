@@ -1,0 +1,47 @@
+import { useState, useEffect } from 'react'
+import { MetricCards } from '../components/MetricCards'
+import SalesChart from '../components/SalesChart'
+import { getSuperAdminMetrics } from '../services/dashboardService'
+import './Dashboard.css'
+
+export default function SuperAdminDashboard() {
+  const [metrics, setMetrics] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    getSuperAdminMetrics()
+      .then((data) => {
+        if (!cancelled) setMetrics(data)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.response?.data?.detail || err.message || 'Failed to load metrics')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  return (
+    <div className="dashboard page-enter page-enter-active">
+      <header className="dashboard-header">
+        <h1 className="dashboard-title text-glow-primary">Super Admin Dashboard</h1>
+        <p className="dashboard-subtitle">Platform metrics and management</p>
+      </header>
+
+      <MetricCards
+        totalSales={metrics?.total_sales}
+        commissionEarned={metrics?.total_commission}
+        netDistributed={metrics?.total_net_to_stands}
+        ordersToday={metrics?.orders_today != null ? Number(metrics.orders_today) : null}
+        showCommission={true}
+        loading={loading}
+        error={error}
+      />
+
+      <SalesChart />
+    </div>
+  )
+}

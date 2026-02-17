@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-komodo_db}
+      POSTGRES_USER: ${POSTGRES_USER:-komodo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-komodo}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-komodo} -d ${POSTGRES_DB:-komodo_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: "True"
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB:-komodo_db}
+      POSTGRES_USER: ${POSTGRES_USER:-komodo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-komodo}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-secret-key}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
