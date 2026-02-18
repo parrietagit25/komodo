@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
+import { useLanguage } from '../context/LanguageContext'
 import { Sidebar } from './Sidebar'
 import './MainLayout.css'
 
 export function MainLayout() {
+  const { t } = useLanguage()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export function MainLayout() {
           type="button"
           className="mobile-header-menu-btn"
           onClick={() => setMobileMenuOpen(true)}
-          aria-label="Open menu"
+          aria-label={t('mainLayout.openMenu')}
         >
           <span className="mobile-header-menu-icon" aria-hidden />
         </button>

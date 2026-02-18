@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import { useLanguage } from '../../context/LanguageContext'
 import {
   getEvents,
   createEvent,
@@ -15,6 +16,7 @@ import EventModal from './EventModal'
 import './Events.css'
 
 export default function Events() {
+  const { t } = useLanguage()
   const { user } = useAuth()
   const isSuperAdmin = user?.role === 'SUPERADMIN'
 
@@ -39,13 +41,13 @@ export default function Events() {
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response?.data) : null) ||
         err.message ||
-        'Failed to load events'
+        t('events.failedLoad')
       setError(msg)
       setList([])
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   const fetchOrganizations = useCallback(async () => {
     if (!isSuperAdmin) return
@@ -92,10 +94,10 @@ export default function Events() {
     try {
       if (editing) {
         await updateEvent(editing.id, payload)
-        showSuccess('Event updated')
+        showSuccess(t('events.updated'))
       } else {
         await createEvent(payload)
-        showSuccess('Event created')
+        showSuccess(t('events.created'))
       }
       handleCloseModal()
       await fetchList()
@@ -105,7 +107,7 @@ export default function Events() {
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response?.data) : null) ||
         err.message ||
-        'Request failed'
+        t('common.requestFailed')
       setError(msg)
     } finally {
       setActionLoading(false)
@@ -115,10 +117,10 @@ export default function Events() {
   const handleDelete = (event) => {
     setConfirm({
       open: true,
-      title: 'Delete event',
-      message: `"${event.name}" — this cannot be undone.`,
-      confirmLabel: 'Delete',
-      successMessage: 'Event deleted',
+      title: t('events.deleteTitle'),
+      message: t('events.deleteMessage'),
+      confirmLabel: t('common.delete'),
+      successMessage: t('events.deleteSuccess'),
       variant: 'danger',
       onConfirm: async () => {
         await deleteEvent(event.id)
@@ -153,15 +155,13 @@ export default function Events() {
     <div className="events-page">
       <header className="events-header">
         <div>
-          <h1 className="events-title text-glow-primary">Events</h1>
+          <h1 className="events-title text-glow-primary">{t('events.title')}</h1>
           <p className="events-subtitle">
-            {isSuperAdmin
-              ? 'Manage events across all organizations'
-              : 'Manage events for your organization'}
+            {isSuperAdmin ? t('events.subtitleSuperAdmin') : t('events.subtitleEventAdmin')}
           </p>
         </div>
         <Button variant="primary" className="btn-create-event" onClick={handleCreate}>
-          + Create Event
+          {t('events.createEventButton')}
         </Button>
       </header>
 
@@ -182,15 +182,15 @@ export default function Events() {
       <div className="events-card table-card border-glow">
         {loading ? (
           <TableSkeleton
-            columns={['Name', 'Organization', 'Start', 'End', 'Status', 'Created', 'Actions']}
+            columns={[t('events.name'), t('events.organization'), t('events.startDate'), t('events.endDate'), t('common.status'), t('events.createdAt'), t('common.actions')]}
             rows={5}
             className="events-table-wrap"
           />
         ) : list.length === 0 ? (
           <div className="events-empty data-loaded-fade-in">
-            <p>No events yet.</p>
+            <p>{t('events.noEventsYet')}</p>
             <Button variant="primary" onClick={handleCreate}>
-              + Create Event
+              {t('events.createEventButton')}
             </Button>
           </div>
         ) : (
@@ -198,13 +198,13 @@ export default function Events() {
             <table className="events-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Organization</th>
-                  <th>Start</th>
-                  <th>End</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                  <th className="th-actions">Actions</th>
+                  <th>{t('events.name')}</th>
+                  <th>{t('events.organization')}</th>
+                  <th>{t('events.startDate')}</th>
+                  <th>{t('events.endDate')}</th>
+                  <th>{t('common.status')}</th>
+                  <th>{t('events.createdAt')}</th>
+                  <th className="th-actions">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -216,7 +216,7 @@ export default function Events() {
                     <td className="cell-muted">{formatDateShort(ev.end_date)}</td>
                     <td>
                       <span className={`status-badge status-${ev.is_active ? 'active' : 'inactive'}`}>
-                        {ev.is_active ? 'Active' : 'Inactive'}
+                        {ev.is_active ? t('events.isActive') : t('events.inactive')}
                       </span>
                     </td>
                     <td className="cell-muted">{formatDateShort(ev.created_at)}</td>
@@ -227,7 +227,7 @@ export default function Events() {
                         onClick={() => handleEdit(ev)}
                         disabled={actionLoading}
                       >
-                        Edit
+                        {t('common.edit')}
                       </button>
                       <button
                         type="button"
@@ -235,7 +235,7 @@ export default function Events() {
                         onClick={() => handleDelete(ev)}
                         disabled={actionLoading}
                       >
-                        Delete
+                        {t('common.delete')}
                       </button>
                     </td>
                   </tr>

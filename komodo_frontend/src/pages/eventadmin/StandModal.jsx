@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useLanguage } from '../../context/LanguageContext'
 import { Button } from '../../components/Button'
 import './Stands.css'
 
@@ -11,6 +12,7 @@ const defaultValues = {
 }
 
 export default function StandModal({ stand, events, onClose, onSubmit, loading }) {
+  const { t } = useLanguage()
   const isEdit = !!stand
   const [form, setForm] = useState(defaultValues)
 
@@ -60,22 +62,22 @@ export default function StandModal({ stand, events, onClose, onSubmit, loading }
       >
         <div className="modal-header">
           <h2 id="stand-modal-title" className="modal-title text-glow-primary">
-            {isEdit ? 'Edit Stand' : 'Create Stand'}
+            {isEdit ? t('stands.modalEditTitle') : t('stands.modalCreateTitle')}
           </h2>
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
+          <button type="button" className="modal-close" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
         <form onSubmit={handleSubmit} className="modal-form">
           <label className="form-label">
-            <span>Event *</span>
+            <span>{t('stands.event')} *</span>
             <select
               className="form-input form-select"
               value={form.event}
               onChange={handleChange('event')}
               required
             >
-              <option value="">Select event</option>
+              <option value="">{t('stands.selectEvent')}</option>
               {events.map((ev) => (
                 <option key={ev.id} value={ev.id}>
                   {ev.name}
@@ -86,7 +88,7 @@ export default function StandModal({ stand, events, onClose, onSubmit, loading }
           </label>
 
           <label className="form-label">
-            <span>Name *</span>
+            <span>{t('common.name')} *</span>
             <input
               type="text"
               className="form-input"
@@ -94,32 +96,32 @@ export default function StandModal({ stand, events, onClose, onSubmit, loading }
               onChange={handleChange('name')}
               required
               autoFocus
-              placeholder="Stand name"
+              placeholder={t('stands.standNamePlaceholder')}
             />
           </label>
 
           <label className="form-label">
-            <span>Description</span>
+            <span>{t('common.description')}</span>
             <textarea
               className="form-input form-textarea"
               value={form.description}
               onChange={handleChange('description')}
-              placeholder="Optional description"
+              placeholder={t('stands.optionalDescription')}
               rows={3}
             />
           </label>
 
           <label className="form-label form-label-checkbox">
             <input type="checkbox" checked={form.is_active} onChange={handleChange('is_active')} />
-            <span>Active</span>
+            <span>{t('stands.isActive')}</span>
           </label>
 
           <div className="modal-actions">
             <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" variant="primary" loading={loading} disabled={!canSubmit}>
-              {isEdit ? 'Save' : 'Create'}
+              {isEdit ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>

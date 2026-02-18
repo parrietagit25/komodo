@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useLanguage } from '../../context/LanguageContext'
 import { Button } from '../../components/Button'
 import './Users.css'
 
 const ROLES = [
-  { value: 'SUPERADMIN', label: 'Super Admin' },
-  { value: 'EVENT_ADMIN', label: 'Event Admin' },
-  { value: 'STAND_ADMIN', label: 'Stand Admin' },
-  { value: 'USER', label: 'User' },
+  { value: 'SUPERADMIN', labelKey: 'users.roleSuperAdmin' },
+  { value: 'EVENT_ADMIN', labelKey: 'users.roleEventAdmin' },
+  { value: 'STAND_ADMIN', labelKey: 'users.roleStandAdmin' },
+  { value: 'USER', labelKey: 'users.roleUser' },
 ]
 
 const STATUSES = [
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'ACTIVE', label: 'Active' },
-  { value: 'SUSPENDED', label: 'Suspended' },
+  { value: 'PENDING', labelKey: 'users.statusPending' },
+  { value: 'ACTIVE', labelKey: 'users.statusActive' },
+  { value: 'SUSPENDED', labelKey: 'users.statusSuspended' },
 ]
 
 const defaultValues = {
@@ -32,6 +33,7 @@ const defaultValues = {
 }
 
 export default function UserModal({ user, organizations, events, stands, onClose, onSubmit, loading }) {
+  const { t } = useLanguage()
   const isEdit = !!user
   const [form, setForm] = useState(defaultValues)
 
@@ -105,57 +107,57 @@ export default function UserModal({ user, organizations, events, stands, onClose
       <div className="modal-content user-modal border-glow" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="user-modal-title">
         <div className="modal-header">
           <h2 id="user-modal-title" className="modal-title text-glow-primary">
-            {isEdit ? 'Edit User' : 'Register User'}
+            {isEdit ? t('users.modalEditTitle') : t('users.modalCreateTitle')}
           </h2>
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close">×</button>
+          <button type="button" className="modal-close" onClick={onClose} aria-label={t('common.close')}>×</button>
         </div>
         <form onSubmit={handleSubmit} className="modal-form user-modal-form">
           <label className="form-label">
-            <span>Username *</span>
-            <input type="text" className="form-input" value={form.username} onChange={handleChange('username')} required autoFocus placeholder="Username" />
+            <span>{t('users.username')} *</span>
+            <input type="text" className="form-input" value={form.username} onChange={handleChange('username')} required autoFocus placeholder={t('users.username')} />
           </label>
           <label className="form-label">
-            <span>Email</span>
+            <span>{t('users.email')}</span>
             <input type="email" className="form-input" value={form.email} onChange={handleChange('email')} placeholder="email@example.com" />
           </label>
           {!isEdit && (
             <>
               <label className="form-label">
-                <span>Password *</span>
+                <span>{t('login.password')} *</span>
                 <input type="password" className="form-input" value={form.password} onChange={handleChange('password')} required placeholder="••••••••" />
               </label>
               <label className="form-label">
-                <span>Confirm password *</span>
+                <span>{t('users.confirmPassword')} *</span>
                 <input type="password" className="form-input" value={form.password_confirm} onChange={handleChange('password_confirm')} required placeholder="••••••••" />
               </label>
             </>
           )}
           <label className="form-label">
-            <span>First name</span>
-            <input type="text" className="form-input" value={form.first_name} onChange={handleChange('first_name')} placeholder="First name" />
+            <span>{t('users.firstName')}</span>
+            <input type="text" className="form-input" value={form.first_name} onChange={handleChange('first_name')} placeholder={t('users.firstName')} />
           </label>
           <label className="form-label">
-            <span>Last name</span>
-            <input type="text" className="form-input" value={form.last_name} onChange={handleChange('last_name')} placeholder="Last name" />
+            <span>{t('users.lastName')}</span>
+            <input type="text" className="form-input" value={form.last_name} onChange={handleChange('last_name')} placeholder={t('users.lastName')} />
           </label>
           <label className="form-label">
-            <span>Role *</span>
+            <span>{t('users.role')} *</span>
             <select className="form-input form-select" value={form.role} onChange={handleChange('role')} required>
               {ROLES.map((r) => (
-                <option key={r.value} value={r.value}>{r.label}</option>
+                <option key={r.value} value={r.value}>{t(r.labelKey)}</option>
               ))}
             </select>
           </label>
           <label className="form-label">
-            <span>Status</span>
+            <span>{t('users.status')}</span>
             <select className="form-input form-select" value={form.status} onChange={handleChange('status')}>
               {STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
+                <option key={s.value} value={s.value}>{t(s.labelKey)}</option>
               ))}
             </select>
           </label>
           <label className="form-label">
-            <span>Organization</span>
+            <span>{t('users.organization')}</span>
             <select className="form-input form-select" value={form.organization} onChange={handleChange('organization')}>
               <option value="">—</option>
               {organizations.map((o) => (
@@ -164,7 +166,7 @@ export default function UserModal({ user, organizations, events, stands, onClose
             </select>
           </label>
           <label className="form-label">
-            <span>Event</span>
+            <span>{t('events.title')}</span>
             <select className="form-input form-select" value={form.event} onChange={handleChange('event')}>
               <option value="">—</option>
               {events.map((e) => (
@@ -173,7 +175,7 @@ export default function UserModal({ user, organizations, events, stands, onClose
             </select>
           </label>
           <label className="form-label">
-            <span>Stand</span>
+            <span>{t('stands.title')}</span>
             <select className="form-input form-select" value={form.stand} onChange={handleChange('stand')}>
               <option value="">—</option>
               {stands.map((s) => (
@@ -184,13 +186,13 @@ export default function UserModal({ user, organizations, events, stands, onClose
           {isEdit && (
             <label className="form-label form-label-checkbox">
               <input type="checkbox" checked={form.is_active} onChange={handleChange('is_active')} />
-              <span>Active (can log in)</span>
+              <span>{t('users.activeCanLogIn')}</span>
             </label>
           )}
           <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>{t('common.cancel')}</Button>
             <Button type="submit" variant="primary" loading={loading} disabled={!canSubmit}>
-              {isEdit ? 'Save' : 'Register'}
+              {isEdit ? t('common.save') : t('users.registerButton')}
             </Button>
           </div>
         </form>

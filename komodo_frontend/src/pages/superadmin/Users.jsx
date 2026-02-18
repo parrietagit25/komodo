@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useLanguage } from '../../context/LanguageContext'
 import {
   getUsers,
   createUser,
@@ -17,20 +18,21 @@ import UserModal from './UserModal'
 import './Users.css'
 
 const ROLES = [
-  { value: 'SUPERADMIN', label: 'Super Admin' },
-  { value: 'EVENT_ADMIN', label: 'Event Admin' },
-  { value: 'STAND_ADMIN', label: 'Stand Admin' },
-  { value: 'USER', label: 'User' },
+  { value: 'SUPERADMIN', labelKey: 'users.roleSuperAdmin' },
+  { value: 'EVENT_ADMIN', labelKey: 'users.roleEventAdmin' },
+  { value: 'STAND_ADMIN', labelKey: 'users.roleStandAdmin' },
+  { value: 'USER', labelKey: 'users.roleUser' },
 ]
 
 const STATUSES = [
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'ACTIVE', label: 'Active' },
-  { value: 'SUSPENDED', label: 'Suspended' },
-  { value: 'DELETED', label: 'Deleted' },
+  { value: 'PENDING', labelKey: 'users.statusPending' },
+  { value: 'ACTIVE', labelKey: 'users.statusActive' },
+  { value: 'SUSPENDED', labelKey: 'users.statusSuspended' },
+  { value: 'DELETED', labelKey: 'users.statusDeleted' },
 ]
 
 export default function Users() {
+  const { t } = useLanguage()
   const [list, setList] = useState([])
   const [organizations, setOrganizations] = useState([])
   const [events, setEvents] = useState([])
@@ -55,13 +57,13 @@ export default function Users() {
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response?.data) : null) ||
         err.message ||
-        'Failed to load users'
+        t('users.failedLoad')
       setError(msg)
       setList([])
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   const fetchOptions = useCallback(async () => {
     try {
@@ -114,10 +116,10 @@ export default function Users() {
     try {
       if (editing) {
         await updateUser(editing.id, payload)
-        showSuccess('User updated')
+        showSuccess(t('users.updated'))
       } else {
         await createUser(payload)
-        showSuccess('User registered')
+        showSuccess(t('users.userRegistered'))
       }
       handleCloseModal()
       await fetchList()
@@ -129,7 +131,7 @@ export default function Users() {
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response?.data) : null) ||
         err.message ||
-        'Request failed'
+        t('common.requestFailed')
       setError(msg)
     } finally {
       setActionLoading(false)
@@ -139,10 +141,10 @@ export default function Users() {
   const handleDeactivate = (user) => {
     setConfirm({
       open: true,
-      title: 'Desactivar usuario',
-      message: `"${user.username}" no podrá iniciar sesión.`,
-      confirmLabel: 'Desactivar',
-      successMessage: 'Usuario desactivado',
+      title: t('users.deactivateTitle'),
+      message: t('users.deactivateMessage'),
+      confirmLabel: t('common.deactivate'),
+      successMessage: t('users.deactivateSuccess'),
       variant: 'danger',
       onConfirm: async () => {
         await deactivateUser(user.id)
@@ -154,10 +156,10 @@ export default function Users() {
   const handleRestore = (user) => {
     setConfirm({
       open: true,
-      title: 'Restaurar usuario',
-      message: `¿Restaurar "${user.username}"?`,
-      confirmLabel: 'Restaurar',
-      successMessage: 'Usuario restaurado',
+      title: t('users.restoreTitle'),
+      message: t('users.restoreMessage'),
+      confirmLabel: t('users.restore'),
+      successMessage: t('users.restoreSuccess'),
       variant: 'primary',
       onConfirm: async () => {
         await restoreUser(user.id)
@@ -175,8 +177,14 @@ export default function Users() {
     })
   }
 
-  const getRoleLabel = (role) => ROLES.find((r) => r.value === role)?.label ?? role
-  const getStatusLabel = (status) => STATUSES.find((s) => s.value === status)?.label ?? status
+  const getRoleLabel = (role) => {
+    const r = ROLES.find((x) => x.value === role)
+    return r ? t(r.labelKey) : role
+  }
+  const getStatusLabel = (status) => {
+    const s = STATUSES.find((x) => x.value === status)
+    return s ? t(s.labelKey) : status
+  }
 
   const getOrgName = (id) => organizations.find((o) => o.id === id)?.name ?? (id ? `#${id}` : '—')
   const getEventName = (id) => events.find((e) => e.id === id)?.name ?? (id ? `#${id}` : '—')
@@ -188,8 +196,8 @@ export default function Users() {
     <div className="users-page">
       <header className="users-header">
         <div>
-          <h1 className="users-title text-glow-primary">Users</h1>
-          <p className="users-subtitle">Register, view, edit and deactivate users</p>
+          <h1 className="users-title text-glow-primary">{t('users.title')}</h1>
+          <p className="users-subtitle">{t('users.subtitle')}</p>
         </div>
         <div className="users-header-actions">
           <label className="users-filter-check">
@@ -198,10 +206,10 @@ export default function Users() {
               checked={showDeactivated}
               onChange={(e) => setShowDeactivated(e.target.checked)}
             />
-            <span>Show deactivated</span>
+            <span>{t('users.showDeactivated')}</span>
           </label>
           <Button variant="primary" className="btn-create-user" onClick={handleCreate}>
-            + Register User
+            {t('users.createUserButton')}
           </Button>
         </div>
       </header>
@@ -216,29 +224,29 @@ export default function Users() {
       <div className="users-card table-card border-glow">
         {loading && list.length === 0 ? (
           <TableSkeleton
-            columns={['Username', 'Email', 'Role', 'Status', 'Organization', 'Event', 'Stand', 'Joined', 'Actions']}
+            columns={[t('users.username'), t('users.email'), t('users.role'), t('users.status'), t('users.organization'), t('events.title'), t('stands.title'), t('users.joined'), t('common.actions')]}
             rows={6}
             className="users-table-wrap"
           />
         ) : displayList.length === 0 ? (
           <div className="users-empty data-loaded-fade-in">
-            <p>{showDeactivated ? 'No deactivated users.' : 'No users found.'}</p>
-            <Button variant="primary" onClick={handleCreate}>+ Register User</Button>
+            <p>{showDeactivated ? t('users.noDeactivatedUsers') : t('users.noUsersFound')}</p>
+            <Button variant="primary" onClick={handleCreate}>{t('users.createUserButton')}</Button>
           </div>
         ) : (
           <div className="users-table-wrap data-loaded-fade-in">
             <table className="users-table">
               <thead>
                 <tr>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Organization</th>
-                  <th>Event</th>
-                  <th>Stand</th>
-                  <th>Joined</th>
-                  <th className="th-actions">Actions</th>
+                  <th>{t('users.username')}</th>
+                  <th>{t('users.email')}</th>
+                  <th>{t('users.role')}</th>
+                  <th>{t('users.status')}</th>
+                  <th>{t('users.organization')}</th>
+                  <th>{t('events.title')}</th>
+                  <th>{t('stands.title')}</th>
+                  <th>{t('users.joined')}</th>
+                  <th className="th-actions">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -263,7 +271,7 @@ export default function Users() {
                         onClick={() => handleEdit(u)}
                         disabled={actionLoading}
                       >
-                        Edit
+                        {t('users.edit')}
                       </button>
                       {u.is_deleted ? (
                         <button
@@ -272,7 +280,7 @@ export default function Users() {
                           onClick={() => handleRestore(u)}
                           disabled={actionLoading}
                         >
-                          Restore
+                          {t('users.restore')}
                         </button>
                       ) : (
                         <button
@@ -281,7 +289,7 @@ export default function Users() {
                           onClick={() => handleDeactivate(u)}
                           disabled={actionLoading}
                         >
-                          Deactivate
+                          {t('common.deactivate')}
                         </button>
                       )}
                     </td>

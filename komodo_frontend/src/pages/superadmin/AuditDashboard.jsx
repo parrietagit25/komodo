@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useLanguage } from '../../context/LanguageContext'
 import { Card, CardHeader, CardTitle, CardBody } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { getReconcile, getBalance, exportCsv } from '../../services/auditService'
@@ -12,6 +13,7 @@ const formatNumber = (value) =>
   }).format(Number(value ?? 0))
 
 export default function AuditDashboard() {
+  const { t } = useLanguage()
   const [reconcileData, setReconcileData] = useState(null)
   const [balanceData, setBalanceData] = useState(null)
   const [reconcileLoading, setReconcileLoading] = useState(true)
@@ -25,21 +27,21 @@ export default function AuditDashboard() {
     return getReconcile()
       .then(setReconcileData)
       .catch((err) => {
-        showError(err.response?.data?.detail || err.message || 'Failed to load reconciliation')
+        showError(err.response?.data?.detail || err.message || t('audit.failedLoadReconcile'))
         setReconcileData(null)
       })
       .finally(() => setReconcileLoading(false))
-  }, [])
+  }, [t])
 
   const fetchBalance = useCallback(() => {
     return getBalance()
       .then(setBalanceData)
       .catch((err) => {
-        showError(err.response?.data?.detail || err.message || 'Failed to load balance')
+        showError(err.response?.data?.detail || err.message || t('audit.failedLoadBalance'))
         setBalanceData(null)
       })
       .finally(() => setBalanceLoading(false))
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let cancelled = false
@@ -64,16 +66,16 @@ export default function AuditDashboard() {
       setReconcileData(data)
       const issues = data?.inconsistencies_found ?? 0
       if (issues === 0) {
-        showSuccess('Reconciliation complete. No inconsistencies found.')
+        showSuccess(t('audit.reconcileCompleteNoIssues'))
       } else {
-        showSuccess(`Reconciliation complete. ${issues} inconsistency(ies) found.`)
+        showSuccess(t('audit.reconcileCompleteWithIssues').replace('{{count}}', issues))
       }
     } catch (err) {
-      showError(err.response?.data?.detail || err.message || 'Reconciliation failed')
+      showError(err.response?.data?.detail || err.message || t('audit.reconcileFailed'))
     } finally {
       setRunReconcileLoading(false)
     }
-  }, [runReconcileLoading])
+  }, [runReconcileLoading, t])
 
   const handleExportCsv = useCallback(async () => {
     if (exportLoading) return
@@ -86,13 +88,13 @@ export default function AuditDashboard() {
       a.download = 'financial_audit_export.csv'
       a.click()
       URL.revokeObjectURL(url)
-      showSuccess('CSV exported successfully')
+      showSuccess(t('audit.csvExported'))
     } catch (err) {
-      showError(err.response?.data?.detail || err.message || 'Export failed')
+      showError(err.response?.data?.detail || err.message || t('audit.exportFailed'))
     } finally {
       setExportLoading(false)
     }
-  }, [exportLoading, startDate, endDate])
+  }, [exportLoading, startDate, endDate, t])
 
   const inconsistencies = (reconcileData?.details || []).filter((d) => d.is_valid === false)
   const hasBalanceError = balanceData && Number(balanceData.difference) !== 0
@@ -100,15 +102,14 @@ export default function AuditDashboard() {
   return (
     <div className="audit-dashboard-page audit-dashboard-page--enter">
       <header className="audit-dashboard-header">
-        <h1 className="audit-dashboard-title text-glow-primary">🛡 Financial Audit</h1>
-        <p className="audit-dashboard-subtitle">Verify financial integrity and ledger balance</p>
+        <h1 className="audit-dashboard-title text-glow-primary">🛡 {t('audit.title')}</h1>
+        <p className="audit-dashboard-subtitle">{t('audit.subtitle')}</p>
       </header>
 
       <div className="audit-dashboard-grid">
-        {/* 1. Reconciliation Summary Card */}
         <Card className="audit-card audit-card--reconcile">
           <CardHeader>
-            <CardTitle>Reconciliation Summary</CardTitle>
+            <CardTitle>{t('audit.reconciliationSummary')}</CardTitle>
           </CardHeader>
           <CardBody>
             {reconcileLoading ? (
@@ -121,13 +122,13 @@ export default function AuditDashboard() {
                 <div className="audit-stats-row">
                   <div className="audit-stat">
                     <span className="audit-stat-value">{formatNumber(reconcileData.total_orders_checked)}</span>
-                    <span className="audit-stat-label">Total Orders Checked</span>
+                    <span className="audit-stat-label">{t('audit.totalOrdersChecked')}</span>
                   </div>
                   <div className="audit-stat">
                     <span className="audit-stat-value audit-stat-value--accent">
                       {formatNumber(reconcileData.inconsistencies_found)}
                     </span>
-                    <span className="audit-stat-label">Inconsistencies Found</span>
+                    <span className="audit-stat-label">{t('audit.inconsistenciesFound')}</span>
                   </div>
                 </div>
                 <div className="audit-status-row">
@@ -138,7 +139,7 @@ export default function AuditDashboard() {
                         : 'audit-badge--warning'
                     }`}
                   >
-                    {(reconcileData.inconsistencies_found ?? 0) === 0 ? '✔ Clean' : '⚠ Issues'}
+                    {(reconcileData.inconsistencies_found ?? 0) === 0 ? `✔ ${t('audit.clean')}` : `⚠ ${t('audit.issues')}`}
                   </span>
                 </div>
                 <Button
@@ -147,19 +148,18 @@ export default function AuditDashboard() {
                   loading={runReconcileLoading}
                   disabled={runReconcileLoading}
                 >
-                  Run Reconciliation
+                  {t('audit.runReconciliation')}
                 </Button>
               </>
             ) : (
-              <p className="audit-empty">No reconciliation data. Run reconciliation.</p>
+              <p className="audit-empty">{t('audit.noReconcileData')}</p>
             )}
           </CardBody>
         </Card>
 
-        {/* 2. Global Balance Verification Card */}
         <Card className={`audit-card audit-card--balance ${hasBalanceError ? 'audit-card--balance-error' : 'audit-card--balance-ok'}`}>
           <CardHeader>
-            <CardTitle>Global Balance Verification</CardTitle>
+            <CardTitle>{t('audit.globalBalanceVerification')}</CardTitle>
           </CardHeader>
           <CardBody>
             {balanceLoading ? (
@@ -170,48 +170,47 @@ export default function AuditDashboard() {
             ) : balanceData ? (
               <>
                 <div className="audit-balance-row">
-                  <span className="audit-balance-label">Wallet Total</span>
+                  <span className="audit-balance-label">{t('audit.walletTotal')}</span>
                   <span className="audit-balance-value">{formatNumber(balanceData.wallet_total)}</span>
                 </div>
                 <div className="audit-balance-row">
-                  <span className="audit-balance-label">Ledger Total</span>
+                  <span className="audit-balance-label">{t('audit.ledgerTotal')}</span>
                   <span className="audit-balance-value">{formatNumber(balanceData.ledger_total)}</span>
                 </div>
                 <div className="audit-balance-row audit-balance-row--diff">
-                  <span className="audit-balance-label">Difference</span>
+                  <span className="audit-balance-label">{t('audit.difference')}</span>
                   <span className={`audit-balance-value ${hasBalanceError ? 'audit-balance-value--error' : 'audit-balance-value--ok'}`}>
                     {formatNumber(balanceData.difference)}
                   </span>
                 </div>
                 {hasBalanceError && (
-                  <p className="audit-warning-msg">Ledger imbalance detected</p>
+                  <p className="audit-warning-msg">{t('audit.ledgerImbalance')}</p>
                 )}
               </>
             ) : (
-              <p className="audit-empty">Unable to load balance data.</p>
+              <p className="audit-empty">{t('audit.unableToLoadBalance')}</p>
             )}
           </CardBody>
         </Card>
       </div>
 
-      {/* 3. Inconsistencies Table */}
       {(reconcileData?.inconsistencies_found ?? 0) > 0 && (
         <section className="audit-section audit-section--table">
-          <h2 className="audit-section-title">Inconsistencies</h2>
+          <h2 className="audit-section-title">{t('audit.inconsistencies')}</h2>
           <div className="audit-table-wrap">
             <table className="audit-table">
               <thead>
                 <tr>
-                  <th>Order ID</th>
-                  <th>Error Type</th>
-                  <th>Details</th>
+                  <th>{t('audit.orderId')}</th>
+                  <th>{t('audit.errorType')}</th>
+                  <th>{t('audit.details')}</th>
                 </tr>
               </thead>
               <tbody>
                 {inconsistencies.map((row, i) => (
                   <tr key={`${row.order_id}-${i}`}>
                     <td className="audit-td-id">{row.order_id}</td>
-                    <td className="audit-td-type">Validation</td>
+                    <td className="audit-td-type">{t('audit.validation')}</td>
                     <td className="audit-td-details">{(row.errors || []).join('; ')}</td>
                   </tr>
                 ))}
@@ -221,14 +220,13 @@ export default function AuditDashboard() {
         </section>
       )}
 
-      {/* 4. Export Financial Data */}
       <section className="audit-section audit-section--export">
-        <h2 className="audit-section-title">Export Financial Data</h2>
+        <h2 className="audit-section-title">{t('audit.exportFinancialData')}</h2>
         <Card className="audit-card audit-card--export">
           <CardBody>
             <div className="audit-export-row">
               <label className="audit-export-label">
-                <span>Start Date</span>
+                <span>{t('audit.startDate')}</span>
                 <input
                   type="date"
                   className="audit-export-input"
@@ -237,7 +235,7 @@ export default function AuditDashboard() {
                 />
               </label>
               <label className="audit-export-label">
-                <span>End Date</span>
+                <span>{t('audit.endDate')}</span>
                 <input
                   type="date"
                   className="audit-export-input"
@@ -252,7 +250,7 @@ export default function AuditDashboard() {
               disabled={exportLoading}
               className="audit-btn-export"
             >
-              Export CSV
+              {t('audit.exportCsv')}
             </Button>
           </CardBody>
         </Card>

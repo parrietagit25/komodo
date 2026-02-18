@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 import { showSuccess, showError } from '../utils/toast'
 import { useAuth } from '../context/AuthContext'
 import { getMyWallet, getMyTransactions, addFunds } from '../services/walletService'
@@ -11,6 +12,7 @@ const TAB_TRANSACTIONS = 'transactions'
 const TAB_ADD_FUNDS = 'addfunds'
 
 export default function Wallet() {
+  const { t } = useLanguage()
   const { user } = useAuth()
   const canAddFunds = user?.role === ROLES.SUPERADMIN || user?.role === ROLES.EVENT_ADMIN
 
@@ -41,14 +43,14 @@ export default function Wallet() {
           setTransactions(txData)
         }
       } catch (e) {
-        if (!cancelled) setError(e.response?.data?.detail || e.message || 'Failed to load wallet')
+        if (!cancelled) setError(e.response?.data?.detail || e.message || t('wallet.failedLoad'))
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
     load()
     return () => { cancelled = true }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     if (!canAddFunds || user?.role !== ROLES.SUPERADMIN) return
@@ -75,9 +77,9 @@ export default function Wallet() {
       const [walletData, txData] = await Promise.all([getMyWallet(), getMyTransactions()])
       setWallet(walletData)
       setTransactions(txData)
-      showSuccess('Funds added')
+      showSuccess(t('wallet.addFundsSuccess'))
     } catch (err) {
-      const msg = err.response?.data?.detail || err.message || 'Failed to add funds'
+      const msg = err.response?.data?.detail || err.message || t('wallet.failedAdd')
       setAddFundsError(msg)
       showError(msg)
     } finally {
@@ -103,8 +105,8 @@ export default function Wallet() {
     return (
       <div className="wallet-page wallet-page--loading">
         <header className="wallet-header">
-          <h1 className="wallet-title text-glow-primary">Wallet</h1>
-          <p className="wallet-subtitle">Balance and transactions</p>
+          <h1 className="wallet-title text-glow-primary">{t('wallet.title')}</h1>
+          <p className="wallet-subtitle">{t('wallet.subtitle')}</p>
         </header>
         <div className="wallet-balance-card wallet-balance-card--skeleton">
           <div className="wallet-balance-skeleton-label" aria-hidden />
@@ -131,8 +133,8 @@ export default function Wallet() {
   return (
     <div className="wallet-page">
       <header className="wallet-header">
-        <h1 className="wallet-title text-glow-primary">Wallet</h1>
-        <p className="wallet-subtitle">Balance and transactions</p>
+        <h1 className="wallet-title text-glow-primary">{t('wallet.title')}</h1>
+        <p className="wallet-subtitle">{t('wallet.subtitle')}</p>
       </header>
 
       {error && (
@@ -140,7 +142,7 @@ export default function Wallet() {
       )}
 
       <div className="wallet-balance-card">
-        <span className="wallet-balance-label">Available Balance</span>
+        <span className="wallet-balance-label">{t('wallet.availableBalance')}</span>
         <span className="wallet-balance-amount wallet-balance-amount--glow">
           ${Number(wallet?.balance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
@@ -156,7 +158,7 @@ export default function Wallet() {
             className={`wallet-tab ${activeTab === TAB_TRANSACTIONS ? 'wallet-tab--active' : ''}`}
             onClick={() => setActiveTab(TAB_TRANSACTIONS)}
           >
-            Transactions
+            {t('wallet.transactions')}
           </button>
           <button
             type="button"
@@ -165,7 +167,7 @@ export default function Wallet() {
             className={`wallet-tab ${activeTab === TAB_ADD_FUNDS ? 'wallet-tab--active' : ''}`}
             onClick={() => setActiveTab(TAB_ADD_FUNDS)}
           >
-            Add Funds
+            {t('wallet.addFunds')}
           </button>
         </div>
       )}
@@ -173,7 +175,7 @@ export default function Wallet() {
       <div className="wallet-tab-content">
         {canAddFunds && activeTab === TAB_ADD_FUNDS ? (
           <div className="wallet-add-funds-card">
-            <h2 className="wallet-section-title">Add funds to user</h2>
+            <h2 className="wallet-section-title">{t('wallet.addFundsToUser')}</h2>
             {addFundsError && <div className="wallet-error small">{addFundsError}</div>}
             <form onSubmit={handleAddFunds} className="wallet-add-form">
               {user?.role === ROLES.SUPERADMIN ? (
@@ -183,7 +185,7 @@ export default function Wallet() {
                   onChange={(e) => setAddFundsUserId(e.target.value)}
                   required
                 >
-                  <option value="">Select user</option>
+                  <option value="">{t('wallet.selectUser')}</option>
                   {users.map((u) => (
                     <option key={u.id} value={u.id}>{u.username} ({u.role})</option>
                   ))}
@@ -204,7 +206,7 @@ export default function Wallet() {
                 step="0.01"
                 min="0.01"
                 className="form-input"
-                placeholder="Amount"
+                placeholder={t('wallet.amountPlaceholder')}
                 value={addFundsAmount}
                 onChange={(e) => setAddFundsAmount(e.target.value)}
                 required
@@ -212,21 +214,21 @@ export default function Wallet() {
               <input
                 type="text"
                 className="form-input"
-                placeholder="Description (optional)"
+                placeholder={t('wallet.descriptionOptional')}
                 value={addFundsDesc}
                 onChange={(e) => setAddFundsDesc(e.target.value)}
               />
               <Button type="submit" variant="primary" loading={addFundsLoading}>
-                Add funds
+                {t('wallet.addFundsButton')}
               </Button>
             </form>
           </div>
         ) : (
           <section className="wallet-transactions">
-            <h2 className="wallet-section-title">Transactions</h2>
+            <h2 className="wallet-section-title">{t('wallet.transactions')}</h2>
             {transactions.length === 0 ? (
               <div className="wallet-empty-state">
-                <p className="wallet-empty">No transactions yet.</p>
+                <p className="wallet-empty">{t('wallet.noTransactions')}</p>
               </div>
             ) : (
               <ul className="wallet-tx-list">

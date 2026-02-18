@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../context/LanguageContext'
 import { getPublicStand, getStandProducts } from '../../services/publicService'
 import { useCart } from '../../context/CartContext'
 import { Card, CardHeader, CardTitle, CardBody } from '../../components/Card'
@@ -7,6 +8,7 @@ import { Button } from '../../components/Button'
 import './Purchase.css'
 
 export default function UserStandProducts() {
+  const { t } = useLanguage()
   const { standId } = useParams()
   const navigate = useNavigate()
   const { addItem, standId: cartStandId, itemCount } = useCart()
@@ -30,14 +32,14 @@ export default function UserStandProducts() {
           setProducts(productsList)
         }
       } catch (e) {
-        if (!cancelled) setError(e.response?.data?.detail || 'Failed to load products')
+        if (!cancelled) setError(e.response?.data?.detail || t('userProducts.failedLoad'))
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
     load()
     return () => { cancelled = true }
-  }, [standId])
+  }, [standId, t])
 
   const handleAddToCart = (product, qty = 1) => {
     addItem(Number(standId), stand?.name ?? null, product, qty)
@@ -47,12 +49,12 @@ export default function UserStandProducts() {
     return (
       <div className="purchase-page">
         <header className="purchase-header">
-          <h1 className="purchase-title text-glow-primary">Products</h1>
-          <p className="purchase-subtitle">Loading…</p>
+          <h1 className="purchase-title text-glow-primary">{t('userProducts.title')}</h1>
+          <p className="purchase-subtitle">{t('userProducts.loading')}</p>
         </header>
         <div className="purchase-loading">
           <span className="loader neon-loader" aria-hidden />
-          <span>Loading products…</span>
+          <span>{t('userProducts.loading')}</span>
         </div>
       </div>
     )
@@ -64,11 +66,11 @@ export default function UserStandProducts() {
         <div>
           <nav className="purchase-breadcrumb">
             <button type="button" className="purchase-back" onClick={() => navigate(-1)}>
-              ← Back
+              {t('userProducts.back')}
             </button>
           </nav>
-          <h1 className="purchase-title text-glow-primary">{stand?.name ?? 'Products'}</h1>
-          <p className="purchase-subtitle">Add items to cart</p>
+          <h1 className="purchase-title text-glow-primary">{stand?.name ?? t('userProducts.title')}</h1>
+          <p className="purchase-subtitle">{t('userProducts.addItemsToCart')}</p>
         </div>
         {itemCount > 0 && (
           <Button
@@ -76,7 +78,7 @@ export default function UserStandProducts() {
             className="purchase-cart-btn"
             onClick={() => navigate('/user/checkout')}
           >
-            Cart ({itemCount})
+            {t('userProducts.cartCount').replace('{{count}}', itemCount)}
           </Button>
         )}
       </header>
@@ -87,7 +89,7 @@ export default function UserStandProducts() {
       )}
       <div className="purchase-grid">
         {products.length === 0 && !error && (
-          <p className="purchase-empty">No products available.</p>
+          <p className="purchase-empty">{t('userProducts.noProductsAvailable')}</p>
         )}
         {products.map((product) => {
           const price = product.price != null ? Number(product.price) : 0
@@ -101,7 +103,7 @@ export default function UserStandProducts() {
                 {product.description && <p className="purchase-product-desc">{product.description}</p>}
                 <div className="purchase-product-meta">
                   <span className="purchase-price text-glow-primary">${price.toFixed(2)}</span>
-                  <span className="purchase-muted">Stock: {stock}</span>
+                  <span className="purchase-muted">{t('products.stock')}: {stock}</span>
                 </div>
                 <Button
                   variant="primary"
@@ -109,7 +111,7 @@ export default function UserStandProducts() {
                   onClick={() => handleAddToCart(product)}
                   disabled={stock === 0}
                 >
-                  Add to cart
+                  {t('userProducts.addToCart')}
                 </Button>
               </CardBody>
             </Card>

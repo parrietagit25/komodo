@@ -1,12 +1,13 @@
 """
 Demo data generation. SUPERADMIN only.
 POST /api/demo/generate/ — create random orders with products, wallet logic, spread over last 30 days.
+POST /api/demo/flush/ — delete all demo-generated orders and reverse their wallet impact (SUPERADMIN only).
 """
 import random
 from decimal import Decimal
 from datetime import timedelta
 
-from django.db import transaction as db_transaction
+from django.db import transaction as db_transaction, connection
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -17,7 +18,9 @@ from apps.core.permissions import IsSuperAdmin
 from apps.orders.models import Order, OrderItem, OrderStatus
 from apps.stands.models import Stand
 from apps.users.models import User, UserRole
-from apps.wallet.models import Wallet, TransactionType, get_platform_wallet
+from apps.wallet.models import Wallet, Transaction, TransactionType, get_platform_wallet
+
+DEMO_ORDER_NOTES = 'Demo generated'
 
 
 def _get_stands_with_products():
@@ -91,7 +94,7 @@ class DemoGenerateView(APIView):
                         stand=stand,
                         status=OrderStatus.COMPLETED,
                         total_amount=total_amount,
-                        notes='Demo generated',
+                        notes=DEMO_ORDER_NOTES,
                     )
                     for (product_id, unit_price, qty) in items:
                         OrderItem.objects.create(
@@ -162,6 +165,93 @@ class DemoGenerateView(APIView):
                 'orders_created': orders_created,
                 'total_generated_revenue': round(float(total_generated_revenue), 2),
                 'total_commission_generated': round(float(total_commission_generated), 2),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class DemoFlushView(APIView):
+    """
+    POST /api/demo/flush/ — delete all demo-generated orders and reverse their wallet impact.
+    SUPERADMIN only. Orders with notes='Demo generated' are removed; compensating transactions
+    are created so wallet balances stay correct (transactions are immutable).
+    """
+    permission_classes = [IsAuthenticated, IsSuperAdmin]
+
+    def post(self, request):
+        demo_orders = Order.objects.filter(notes=DEMO_ORDER_NOTES).select_related('stand').order_by('id')
+        count = 0
+        errors = []
+
+        for order in demo_orders:
+            try:
+                with db_transaction.atomic():
+                    # Get all transactions linked to this order, ordered by wallet_id to avoid deadlocks
+                    txs = list(
+                        Transaction.objects.filter(order=order).select_related('wallet').order_by('wallet_id')
+                    )
+                    for tx in txs:
+                        wallet = Wallet.objects.select_for_update().get(pk=tx.wallet_id)
+                        rev_desc = f'Reversal demo order #{order.id}'
+                        if tx.transaction_type == TransactionType.CREDIT:
+                            if wallet.balance < tx.amount:
+                                raise ValueError(
+                                    f'Wallet {wallet.id} balance {wallet.balance} < {tx.amount} for reversal'
+                                )
+                            wallet.balance -= tx.amount
+                            wallet.save(update_fields=['balance'])
+                            Transaction.objects.create(
+                                wallet=wallet,
+                                amount=tx.amount,
+                                transaction_type=TransactionType.DEBIT,
+                                order=None,
+                                description=rev_desc,
+                            )
+                        else:
+                            wallet.balance += tx.amount
+                            wallet.save(update_fields=['balance'])
+                            Transaction.objects.create(
+                                wallet=wallet,
+                                amount=tx.amount,
+                                transaction_type=TransactionType.CREDIT,
+                                order=None,
+                                description=rev_desc,
+                            )
+                    order.delete()
+                    count += 1
+            except Exception as e:
+                errors.append(f'Order #{order.id}: {e}')
+
+        return Response(
+            {
+                'orders_deleted': count,
+                'detail': f'Deleted {count} demo orders.' + (f' Errors: {errors}' if errors else ''),
+                'errors': errors if errors else None,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class DemoFlushAllView(APIView):
+    """
+    POST /api/demo/flush-all/ — delete ALL orders and ALL transactions, set all wallet balances to 0.
+    SUPERADMIN only. Use for cleaning test data. Bypasses transaction immutability via raw SQL.
+    """
+    permission_classes = [IsAuthenticated, IsSuperAdmin]
+
+    def post(self, request):
+        with db_transaction.atomic():
+            orders_count, _ = Order.objects.all().delete()
+            with connection.cursor() as cursor:
+                cursor.execute(f'DELETE FROM {Transaction._meta.db_table}')
+                transactions_count = cursor.rowcount
+            Wallet.objects.all().update(balance=Decimal('0.00'))
+
+        return Response(
+            {
+                'orders_deleted': orders_count,
+                'transactions_deleted': transactions_count,
+                'detail': f'Deleted {orders_count} orders and {transactions_count} transactions. All wallet balances set to 0.',
             },
             status=status.HTTP_200_OK,
         )

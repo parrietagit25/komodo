@@ -1,0 +1,516 @@
+/* Project Status — SuperAdmin-only strategic overview. Dark theme, neon green / pink. */
+
+.project-status-page {
+  background: #0A0A0B;
+  min-height: 100%;
+  padding: var(--space-mobile-y, 1.5rem) 1rem 2rem;
+}
+
+.project-status-page--enter {
+  animation: project-status-fade-in 0.35s ease-out;
+}
+
+@keyframes project-status-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.project-status-header {
+  margin-bottom: 2rem;
+}
+
+.project-status-title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.project-status-subtitle {
+  color: var(--text-secondary, #a1a1aa);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Loading / Error */
+.project-status-loading,
+.project-status-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+}
+
+.project-status-loading .neon-loader {
+  width: 40px;
+  height: 40px;
+  border-width: 2px;
+}
+
+.project-status-error {
+  color: var(--secondary, #FF3366);
+}
+
+.project-status-error p {
+  margin: 0;
+}
+
+/* ——— Product Maturity Score ——— */
+.project-status-maturity {
+  margin-bottom: 2rem;
+  animation: project-status-fade-in 0.4s ease-out 0.05s backwards;
+}
+
+.project-status-maturity-card {
+  background: #141416;
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.06));
+  max-width: 420px;
+  margin: 0 auto;
+  border-radius: var(--radius-lg, 8px);
+}
+
+.project-status-maturity-card .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.project-status-maturity-heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #fafafa);
+  margin: 0 0 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.project-status-maturity-ring-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin-bottom: 1rem;
+}
+
+.project-status-maturity-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.project-status-maturity-ring-bg {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.project-status-maturity-ring-fill {
+  transition: stroke-dashoffset 0.6s ease-out;
+  filter: drop-shadow(0 0 8px var(--maturity-glow, #00FF88));
+}
+
+.project-status-maturity-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 24px var(--maturity-glow);
+  animation: project-status-maturity-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes project-status-maturity-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.project-status-maturity-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #fafafa);
+  margin: 0 0 0.35rem;
+}
+
+.project-status-maturity-subtext {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #a1a1aa);
+  margin: 0;
+}
+
+/* ——— Roadmap Timeline ——— */
+.project-status-roadmap {
+  margin-bottom: 2.5rem;
+  animation: project-status-fade-in 0.4s ease-out 0.1s backwards;
+}
+
+.project-status-roadmap-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary, #fafafa);
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.02em;
+}
+
+.project-status-roadmap-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #a1a1aa);
+  margin: 0 0 1.5rem;
+}
+
+.project-status-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Neon vertical line (desktop) */
+.project-status-timeline-line {
+  display: none;
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 255, 136, 0.15),
+    rgba(0, 255, 136, 0.5) 20%,
+    rgba(0, 255, 136, 0.5) 80%,
+    rgba(255, 255, 255, 0.08)
+  );
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.3);
+  border-radius: 1px;
+}
+
+.project-status-timeline-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.project-status-timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.project-status-timeline-dot {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--dot-color, #00FF88);
+  box-shadow: 0 0 12px var(--dot-color), 0 0 20px rgba(0, 255, 136, 0.4);
+  margin-top: 1.25rem;
+  border: 2px solid #0A0A0B;
+  z-index: 1;
+}
+
+.project-status-roadmap-card {
+  flex: 1;
+  min-width: 0;
+  background: #141416;
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.06));
+  border-radius: var(--radius-lg, 8px);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.project-status-roadmap-card:hover {
+  border-color: var(--border-strong, rgba(255, 255, 255, 0.1));
+}
+
+.project-status-roadmap-card .card-body {
+  padding: 1.25rem 1.25rem;
+}
+
+.project-status-roadmap-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.project-status-roadmap-phase-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary, #fafafa);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.project-status-roadmap-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid;
+}
+
+.project-status-roadmap-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #a1a1aa);
+}
+
+.project-status-roadmap-features li {
+  padding: 0.25rem 0;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.project-status-roadmap-features li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--text-muted, #71717a);
+}
+
+.project-status-timeline-item--reveal {
+  animation: project-status-fade-in 0.45s ease-out backwards;
+}
+
+/* Mobile: stack only, no line */
+@media (min-width: 768px) {
+  .project-status-timeline-line {
+    display: block;
+  }
+
+  .project-status-timeline-item {
+    padding-left: 0;
+    gap: 1.25rem;
+  }
+
+  .project-status-timeline-dot {
+    margin-left: 13px;
+    margin-top: 1.35rem;
+  }
+}
+
+/* KPI cards */
+.project-status-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.project-status-kpi-card {
+  background: #141416;
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.06));
+  border-radius: var(--radius-lg, 8px);
+  padding: 1.25rem 1rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.project-status-kpi-card:hover {
+  border-color: var(--border-strong, rgba(255, 255, 255, 0.1));
+}
+
+.project-status-kpi-card--highlight {
+  border-color: rgba(0, 255, 136, 0.25);
+}
+
+.project-status-kpi-card--highlight:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+}
+
+.project-status-kpi-value {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--text-primary, #fafafa);
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.project-status-kpi-value--green {
+  color: #00FF88;
+}
+
+.project-status-kpi-value--pink {
+  color: #FF3366;
+}
+
+.project-status-kpi-value--glow {
+  color: #00FF88;
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.project-status-kpi-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #a1a1aa);
+  margin: 0;
+}
+
+/* Table section */
+.project-status-table-section {
+  margin-bottom: 2rem;
+}
+
+.project-status-table-section .card-body {
+  padding: 0;
+}
+
+.project-status-table-wrap {
+  overflow-x: auto;
+}
+
+.project-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.project-status-table th,
+.project-status-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.06));
+}
+
+.project-status-table th {
+  color: var(--text-secondary, #a1a1aa);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.project-status-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.project-status-cell-feature {
+  font-weight: 500;
+  color: var(--text-primary, #fafafa);
+}
+
+.project-status-table-row-enter {
+  animation: project-status-fade-in 0.3s ease-out backwards;
+}
+
+.project-status-table-row-enter:nth-child(1) { animation-delay: 0.02s; }
+.project-status-table-row-enter:nth-child(2) { animation-delay: 0.04s; }
+.project-status-table-row-enter:nth-child(3) { animation-delay: 0.06s; }
+.project-status-table-row-enter:nth-child(4) { animation-delay: 0.08s; }
+.project-status-table-row-enter:nth-child(5) { animation-delay: 0.1s; }
+.project-status-table-row-enter:nth-child(6) { animation-delay: 0.12s; }
+.project-status-table-row-enter:nth-child(7) { animation-delay: 0.14s; }
+.project-status-table-row-enter:nth-child(8) { animation-delay: 0.16s; }
+.project-status-table-row-enter:nth-child(9) { animation-delay: 0.18s; }
+.project-status-table-row-enter:nth-child(10) { animation-delay: 0.2s; }
+.project-status-table-row-enter:nth-child(11) { animation-delay: 0.22s; }
+.project-status-table-row-enter:nth-child(12) { animation-delay: 0.24s; }
+.project-status-table-row-enter:nth-child(13) { animation-delay: 0.26s; }
+
+/* Badges */
+.project-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--badge-color, #00FF88);
+  border: 1px solid rgba(0, 255, 136, 0.35);
+}
+
+.project-status-badge--completed {
+  --badge-color: #00FF88;
+  background: rgba(0, 255, 136, 0.12);
+  border-color: rgba(0, 255, 136, 0.35);
+}
+
+.project-status-badge--pending {
+  --badge-color: #FF3366;
+  background: rgba(255, 51, 102, 0.12);
+  border-color: rgba(255, 51, 102, 0.35);
+}
+
+/* Strategic sections grid */
+.project-status-strategic {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.project-status-strategic .card {
+  background: #141416;
+}
+
+.project-status-section-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.project-status-section-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: var(--text-primary, #fafafa);
+  border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.06));
+}
+
+.project-status-section-list li:last-child {
+  border-bottom: none;
+}
+
+.project-status-section-badge.project-status-badge--completed {
+  background: rgba(0, 255, 136, 0.12);
+  color: #00FF88;
+}
+
+.project-status-section-badge.project-status-badge--pending {
+  background: rgba(255, 51, 102, 0.12);
+  color: #FF3366;
+}
+
+.project-status-section-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .project-status-page {
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  .project-status-kpis {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+
+  .project-status-strategic {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .project-status-strategic {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

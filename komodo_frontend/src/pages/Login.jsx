@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { showError } from '../utils/toast'
 import { useAuth } from '../context/AuthContext'
+import { useLanguage } from '../context/LanguageContext'
 import { Button } from '../components/Button'
 import { Card, CardHeader, CardTitle, CardBody } from '../components/Card'
 import './Login.css'
@@ -12,6 +13,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login, getHomeForRole } = useAuth()
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname
@@ -30,7 +32,7 @@ export default function Login() {
         err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
-        'Login failed'
+        t('login.failed')
       const displayMsg = typeof msg === 'object' ? JSON.stringify(msg) : msg
       setError(displayMsg)
       showError(displayMsg)
@@ -45,8 +47,8 @@ export default function Login() {
       <div className="login-container">
         <Card className="login-card">
           <CardHeader>
-            <CardTitle>Welcome to Komodo</CardTitle>
-            <p className="login-subtitle">Sign in with your account</p>
+            <CardTitle>{t('login.title')}</CardTitle>
+            <p className="login-subtitle">{t('login.subtitle')}</p>
           </CardHeader>
           <CardBody>
             <form onSubmit={handleSubmit} className="login-form">
@@ -56,7 +58,7 @@ export default function Login() {
                 </div>
               )}
               <label className="login-label">
-                <span>Username</span>
+                <span>{t('login.username')}</span>
                 <input
                   type="text"
                   className="login-input"
@@ -68,7 +70,7 @@ export default function Login() {
                 />
               </label>
               <label className="login-label">
-                <span>Password</span>
+                <span>{t('login.password')}</span>
                 <input
                   type="password"
                   className="login-input"
@@ -84,7 +86,7 @@ export default function Login() {
                 className="login-submit"
                 loading={loading}
               >
-                Sign in
+                {t('login.submit')}
               </Button>
             </form>
           </CardBody>

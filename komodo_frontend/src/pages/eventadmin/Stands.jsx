@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useAuth } from '../../context/AuthContext'
+import { useLanguage } from '../../context/LanguageContext'
 import {
   getStands,
   createStand,
@@ -15,7 +15,7 @@ import StandModal from './StandModal'
 import './Stands.css'
 
 export default function Stands() {
-  const { user } = useAuth()
+  const { t } = useLanguage()
 
   const [list, setList] = useState([])
   const [events, setEvents] = useState([])
@@ -38,13 +38,13 @@ export default function Stands() {
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response?.data) : null) ||
         err.message ||
-        'Failed to load stands'
+        t('stands.failedLoad')
       setError(msg)
       setList([])
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -90,10 +90,10 @@ export default function Stands() {
     try {
       if (editing) {
         await updateStand(editing.id, payload)
-        showSuccess('Stand updated')
+        showSuccess(t('stands.updated'))
       } else {
         await createStand(payload)
-        showSuccess('Stand created')
+        showSuccess(t('stands.created'))
       }
       handleCloseModal()
       await fetchList()
@@ -103,7 +103,7 @@ export default function Stands() {
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response?.data) : null) ||
         err.message ||
-        'Request failed'
+        t('common.requestFailed')
       setError(msg)
     } finally {
       setActionLoading(false)
@@ -113,10 +113,10 @@ export default function Stands() {
   const handleDelete = (stand) => {
     setConfirm({
       open: true,
-      title: 'Delete stand',
-      message: `"${stand.name}" — this cannot be undone.`,
-      confirmLabel: 'Delete',
-      successMessage: 'Stand deleted',
+      title: t('stands.deleteTitle'),
+      message: t('stands.deleteMessage'),
+      confirmLabel: t('common.delete'),
+      successMessage: t('stands.deleteSuccess'),
       variant: 'danger',
       onConfirm: async () => {
         await deleteStand(stand.id)
@@ -139,13 +139,11 @@ export default function Stands() {
     <div className="stands-page">
       <header className="stands-header">
         <div>
-          <h1 className="stands-title text-glow-primary">Stands</h1>
-          <p className="stands-subtitle">
-            Manage stands for your events
-          </p>
+          <h1 className="stands-title text-glow-primary">{t('stands.title')}</h1>
+          <p className="stands-subtitle">{t('stands.subtitle')}</p>
         </div>
         <Button variant="primary" className="btn-create-stand" onClick={handleCreate}>
-          + Create Stand
+          {t('stands.createStandButton')}
         </Button>
       </header>
 
@@ -166,15 +164,15 @@ export default function Stands() {
       <div className="stands-card table-card border-glow">
         {loading ? (
           <TableSkeleton
-            columns={['Name', 'Event', 'Status', 'Created', 'Actions']}
+            columns={[t('stands.name'), t('stands.event'), t('common.status'), t('stands.createdAt'), t('common.actions')]}
             rows={5}
             className="stands-table-wrap"
           />
         ) : list.length === 0 ? (
           <div className="stands-empty data-loaded-fade-in">
-            <p>No stands yet.</p>
+            <p>{t('stands.noStandsYet')}</p>
             <Button variant="primary" onClick={handleCreate}>
-              + Create Stand
+              {t('stands.createStandButton')}
             </Button>
           </div>
         ) : (
@@ -182,11 +180,11 @@ export default function Stands() {
             <table className="stands-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Event</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                  <th className="th-actions">Actions</th>
+                  <th>{t('stands.name')}</th>
+                  <th>{t('stands.event')}</th>
+                  <th>{t('common.status')}</th>
+                  <th>{t('stands.createdAt')}</th>
+                  <th className="th-actions">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -196,7 +194,7 @@ export default function Stands() {
                     <td>{stand.event_detail?.name ?? stand.event ?? '—'}</td>
                     <td>
                       <span className={`status-badge status-${stand.is_active ? 'active' : 'inactive'}`}>
-                        {stand.is_active ? 'Active' : 'Inactive'}
+                        {stand.is_active ? t('stands.isActive') : t('stands.inactive')}
                       </span>
                     </td>
                     <td className="cell-muted">{formatDate(stand.created_at)}</td>
@@ -207,7 +205,7 @@ export default function Stands() {
                         onClick={() => handleEdit(stand)}
                         disabled={actionLoading}
                       >
-                        Edit
+                        {t('common.edit')}
                       </button>
                       <button
                         type="button"
@@ -215,7 +213,7 @@ export default function Stands() {
                         onClick={() => handleDelete(stand)}
                         disabled={actionLoading}
                       >
-                        Delete
+                        {t('common.delete')}
                       </button>
                     </td>
                   </tr>

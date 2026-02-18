@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useLanguage } from '../../context/LanguageContext'
 import { Button } from '../../components/Button'
 import './Products.css'
 
@@ -13,6 +14,7 @@ const defaultValues = {
 }
 
 export default function ProductModal({ product, stands, onClose, onSubmit, loading }) {
+  const { t } = useLanguage()
   const isEdit = !!product
   const [form, setForm] = useState(defaultValues)
 
@@ -60,44 +62,44 @@ export default function ProductModal({ product, stands, onClose, onSubmit, loadi
       <div className="modal-content product-modal border-glow" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
         <div className="modal-header">
           <h2 id="product-modal-title" className="modal-title text-glow-primary">
-            {isEdit ? 'Edit Product' : 'Create Product'}
+            {isEdit ? t('products.modalEditTitle') : t('products.modalCreateTitle')}
           </h2>
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close">×</button>
+          <button type="button" className="modal-close" onClick={onClose} aria-label={t('common.close')}>×</button>
         </div>
         <form onSubmit={handleSubmit} className="modal-form">
           <label className="form-label">
-            <span>Stand *</span>
+            <span>{t('products.stand')} *</span>
             <select className="form-input form-select" value={form.stand} onChange={handleChange('stand')} required>
-              <option value="">Select stand</option>
+              <option value="">{t('products.selectStand')}</option>
               {stands.map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
           </label>
           <label className="form-label">
-            <span>Name *</span>
-            <input type="text" className="form-input" value={form.name} onChange={handleChange('name')} required autoFocus placeholder="Product name" />
+            <span>{t('common.name')} *</span>
+            <input type="text" className="form-input" value={form.name} onChange={handleChange('name')} required autoFocus placeholder={t('products.productNamePlaceholder')} />
           </label>
           <label className="form-label">
-            <span>Description</span>
-            <textarea className="form-input form-textarea" value={form.description} onChange={handleChange('description')} placeholder="Optional" rows={2} />
+            <span>{t('common.description')}</span>
+            <textarea className="form-input form-textarea" value={form.description} onChange={handleChange('description')} placeholder={t('products.optionalPlaceholder')} rows={2} />
           </label>
           <label className="form-label">
-            <span>Price</span>
+            <span>{t('products.price')}</span>
             <input type="number" min="0" step="0.01" className="form-input" value={form.price} onChange={handleChange('price')} placeholder="0.00" />
           </label>
           <label className="form-label">
-            <span>Stock quantity</span>
+            <span>{t('products.stockQuantity')}</span>
             <input type="number" min="0" className="form-input" value={form.stock_quantity} onChange={handleChange('stock_quantity')} placeholder="0" />
           </label>
           <label className="form-label form-label-checkbox">
             <input type="checkbox" checked={form.is_available} onChange={handleChange('is_available')} />
-            <span>Available</span>
+            <span>{t('products.available')}</span>
           </label>
           <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>{t('common.cancel')}</Button>
             <Button type="submit" variant="primary" loading={loading} disabled={!canSubmit}>
-              {isEdit ? 'Save' : 'Create'}
+              {isEdit ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>

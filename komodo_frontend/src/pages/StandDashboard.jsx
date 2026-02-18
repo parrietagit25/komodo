@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 import { MetricCards } from '../components/MetricCards'
 import SalesChart from '../components/SalesChart'
 import { getStandAdminMetrics } from '../services/dashboardService'
 import './Dashboard.css'
 
 export default function StandDashboard() {
+  const { t } = useLanguage()
   const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -16,19 +18,19 @@ export default function StandDashboard() {
         if (!cancelled) setMetrics(data)
       })
       .catch((err) => {
-        if (!cancelled) setError(err.response?.data?.detail || err.message || 'Failed to load metrics')
+        if (!cancelled) setError(err.response?.data?.detail || err.message || t('dashboard.failedMetrics'))
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
       })
     return () => { cancelled = true }
-  }, [])
+  }, [t])
 
   return (
     <div className="dashboard page-enter page-enter-active">
       <header className="dashboard-header">
-        <h1 className="dashboard-title text-glow-primary">Stand Dashboard</h1>
-        <p className="dashboard-subtitle">Your stand metrics and orders</p>
+        <h1 className="dashboard-title text-glow-primary">{t('dashboard.standAdminTitle')}</h1>
+        <p className="dashboard-subtitle">{t('dashboard.standAdminSubtitle')}</p>
       </header>
 
       <MetricCards

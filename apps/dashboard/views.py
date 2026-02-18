@@ -14,6 +14,55 @@ from rest_framework.views import APIView
 
 from apps.core.permissions import IsSuperAdmin, IsEventAdminOrSuperAdmin
 from apps.orders.models import Order
+
+
+# Static project status (vision vs implemented). SuperAdmin-only internal overview.
+# Idempotency, Concurrency-safe checkout, Reconciliation = financial hardening (implemented).
+PROJECT_STATUS_CORE_FEATURES = [
+    {'feature': 'Multi-tenant', 'planned': True, 'implemented': True},
+    {'feature': 'Wallet system', 'planned': True, 'implemented': True},
+    {'feature': 'Commission engine', 'planned': True, 'implemented': True},
+    {'feature': 'Executive dashboard', 'planned': True, 'implemented': True},
+    {'feature': 'Financial audit', 'planned': True, 'implemented': True},
+    {'feature': 'Idempotency', 'planned': True, 'implemented': True},
+    {'feature': 'Concurrency-safe checkout', 'planned': True, 'implemented': True},
+    {'feature': 'Reconciliation', 'planned': True, 'implemented': True},
+    {'feature': 'Stripe integration', 'planned': True, 'implemented': False},
+    {'feature': 'Advanced advertising', 'planned': True, 'implemented': False},
+    {'feature': 'Geo-fencing', 'planned': True, 'implemented': False},
+    {'feature': 'Advanced gamification', 'planned': True, 'implemented': False},
+    {'feature': 'Runner logistics', 'planned': True, 'implemented': False},
+    {'feature': 'Offline mesh mode', 'planned': True, 'implemented': False},
+    {'feature': 'Predictive AI', 'planned': True, 'implemented': False},
+]
+
+
+def _maturity_level(completion_percentage):
+    """Map completion percentage to maturity level label."""
+    if completion_percentage < 40:
+        return 'Early Stage'
+    if completion_percentage < 70:
+        return 'Growth Stage'
+    if completion_percentage < 90:
+        return 'Advanced SaaS'
+    return 'Production-Ready Infrastructure'
+
+
+def _build_project_status_response():
+    """Build project status payload with computed maturity fields."""
+    features = PROJECT_STATUS_CORE_FEATURES
+    total = len([f for f in features if f.get('planned', True)])
+    implemented = len([f for f in features if f.get('implemented', False)])
+    pending = total - implemented
+    completion = round((implemented / total * 100)) if total else 0
+    return {
+        'core_features': features,
+        'total_features': total,
+        'implemented_features': implemented,
+        'pending_features': pending,
+        'completion_percentage': completion,
+        'maturity_level': _maturity_level(completion),
+    }
 from apps.wallet.models import Transaction, TransactionType, get_platform_wallet
 from apps.users.models import User, UserRole
 
@@ -426,3 +475,108 @@ class FinancialOverviewView(APIView):
             'top_stands': top_stands,
             'monthly_revenue': monthly_revenue,
         }, status=status.HTTP_200_OK)
+
+
+class ProjectStatusView(APIView):
+    """
+    GET /api/dashboard/project-status/
+    SuperAdmin only. Static comparison: original vision vs implemented vs pending.
+    Returns core_features plus computed: total_features, implemented_features, pending_features,
+    completion_percentage, maturity_level. Internal strategic overview; not public.
+    """
+    permission_classes = [IsAuthenticated, IsSuperAdmin]
+
+    def get(self, request):
+        return Response(_build_project_status_response(), status=status.HTTP_200_OK)
+
+
+def _readiness_level(score):
+    """Map investor readiness score to level."""
+    if score < 50:
+        return 'Not Ready'
+    if score < 70:
+        return 'Early Investor'
+    if score < 85:
+        return 'Fundable MVP'
+    return 'Scalable SaaS'
+
+
+def _build_investor_readiness_response():
+    """
+    Build investor readiness payload. Uses project status for maturity;
+    financial/audit/concurrency are implemented; deployment from env or Local.
+    """
+    import os
+    status_data = _build_project_status_response()
+    maturity_pct = status_data['completion_percentage']
+    audit_active = True
+    concurrency_safe = True
+    deployment_status = os.environ.get('DEPLOYMENT_STATUS', 'Local')
+
+    overview = {
+        'product_maturity_pct': maturity_pct,
+        'financial_integrity_status': 'Strong' if (audit_active and concurrency_safe) else 'Moderate',
+        'concurrency_safe_engine': concurrency_safe,
+        'audit_system_active': audit_active,
+        'deployment_status': deployment_status,
+    }
+
+    business_model = {
+        'monetization_model': 'Commission-based marketplace',
+        'revenue_engine': 'Automatic commission per order',
+        'scalability': 'Multi-tenant architecture',
+        'expansion_readiness': 'Stripe-ready (planned)',
+    }
+
+    financial_risk = 'Low' if (audit_active and concurrency_safe) else 'Medium'
+    operational_risk = 'Low' if audit_active else 'Medium'
+    pending = status_data['pending_features']
+    technical_debt_risk = 'High' if pending > 6 else ('Medium' if pending > 3 else 'Low')
+
+    risk_assessment = {
+        'financial_risk': financial_risk,
+        'operational_risk': operational_risk,
+        'technical_debt_risk': technical_debt_risk,
+    }
+
+    financial_robustness = 95 if (audit_active and concurrency_safe) else 50
+    # Local = dev/demo environment still counts as deployment-ready for internal pitch
+    deployment_readiness = 80 if deployment_status and deployment_status.lower() not in ('local', '') else 55
+    monetization_clarity = 92
+    score = round(
+        0.40 * maturity_pct
+        + 0.30 * financial_robustness
+        + 0.20 * deployment_readiness
+        + 0.10 * monetization_clarity
+    )
+    score = min(100, max(0, score))
+
+    readiness_score = {
+        'score': score,
+        'level': _readiness_level(score),
+        'breakdown': {
+            'product_maturity': maturity_pct,
+            'financial_robustness': financial_robustness,
+            'deployment_readiness': deployment_readiness,
+            'monetization_clarity': monetization_clarity,
+        },
+    }
+
+    return {
+        'overview': overview,
+        'business_model': business_model,
+        'risk_assessment': risk_assessment,
+        'readiness_score': readiness_score,
+    }
+
+
+class InvestorReadinessView(APIView):
+    """
+    GET /api/dashboard/investor-readiness/
+    SuperAdmin only. Investor readiness overview, business model, risk assessment, weighted score.
+    Pitch-ready internal dashboard.
+    """
+    permission_classes = [IsAuthenticated, IsSuperAdmin]
+
+    def get(self, request):
+        return Response(_build_investor_readiness_response(), status=status.HTTP_200_OK)

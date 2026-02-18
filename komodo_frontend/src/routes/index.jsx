@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute'
 import { useAuth } from '../context/AuthContext'
+import { useLanguage } from '../context/LanguageContext'
 import { MainLayout } from '../layout/MainLayout'
 import Login from '../pages/Login'
 import SuperAdminDashboard from '../pages/SuperAdminDashboard'
@@ -9,6 +10,8 @@ import Users from '../pages/superadmin/Users'
 import Investment from '../pages/superadmin/Investment'
 import FinancialOverview from '../pages/superadmin/FinancialOverview'
 import AuditDashboard from '../pages/superadmin/AuditDashboard'
+import ProjectStatus from '../pages/superadmin/ProjectStatus'
+import InvestorReadiness from '../pages/superadmin/InvestorReadiness'
 import EventAdminDashboard from '../pages/EventAdminDashboard'
 import Events from '../pages/eventadmin/Events'
 import Stands from '../pages/eventadmin/Stands'
@@ -21,6 +24,7 @@ import UserEvents from '../pages/user/UserEvents'
 import UserEventStands from '../pages/user/UserEventStands'
 import UserStandProducts from '../pages/user/UserStandProducts'
 import Checkout from '../pages/user/Checkout'
+import Settings from '../pages/Settings'
 
 const ROLES = {
   SUPERADMIN: 'SUPERADMIN',
@@ -87,6 +91,22 @@ export const routes = [
         element: (
           <ProtectedRoute allowedRoles={[ROLES.SUPERADMIN]}>
             <AuditDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'superadmin/project-status',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.SUPERADMIN]}>
+            <ProjectStatus />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'superadmin/investor-readiness',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.SUPERADMIN]}>
+            <InvestorReadiness />
           </ProtectedRoute>
         ),
       },
@@ -186,6 +206,14 @@ export const routes = [
           </ProtectedRoute>
         ),
       },
+      {
+        path: 'settings',
+        element: (
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
@@ -196,11 +224,12 @@ export const routes = [
 
 function GuestOnlyRoute({ children }) {
   const { user, loading, getHomeForRole } = useAuth()
+  const { t } = useLanguage()
   if (loading) {
     return (
       <div className="page-loading">
         <div className="loader neon-loader" aria-hidden />
-        <span>Loading...</span>
+        <span>{t('common.loading')}</span>
       </div>
     )
   }

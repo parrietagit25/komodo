@@ -8,6 +8,8 @@ from .views import (
     StandAdminDashboardView,
     SalesChartView,
     FinancialOverviewView,
+    ProjectStatusView,
+    InvestorReadinessView,
 )
 
 urlpatterns = [
@@ -16,4 +18,6 @@ urlpatterns = [
     path('standadmin/', StandAdminDashboardView.as_view(), name='dashboard-standadmin'),
     path('sales-chart/', SalesChartView.as_view(), name='dashboard-sales-chart'),
     path('financial-overview/', FinancialOverviewView.as_view(), name='dashboard-financial-overview'),
+    path('project-status/', ProjectStatusView.as_view(), name='dashboard-project-status'),
+    path('investor-readiness/', InvestorReadinessView.as_view(), name='dashboard-investor-readiness'),
 ]

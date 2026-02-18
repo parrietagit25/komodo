@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useLanguage } from '../../context/LanguageContext'
 import { getPublicEvents } from '../../services/publicService'
 import { Card, CardHeader, CardTitle, CardBody } from '../../components/Card'
 import './Purchase.css'
 
 export default function UserEvents() {
+  const { t } = useLanguage()
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -17,25 +19,25 @@ export default function UserEvents() {
         const list = await getPublicEvents()
         if (!cancelled) setEvents(list)
       } catch (e) {
-        if (!cancelled) setError(e.response?.data?.detail || 'Failed to load events')
+        if (!cancelled) setError(e.response?.data?.detail || t('userEvents.failedLoad'))
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
     load()
     return () => { cancelled = true }
-  }, [])
+  }, [t])
 
   if (loading) {
     return (
       <div className="purchase-page">
         <header className="purchase-header">
-          <h1 className="purchase-title text-glow-primary">Events</h1>
-          <p className="purchase-subtitle">Choose an event to browse stands</p>
+          <h1 className="purchase-title text-glow-primary">{t('userEvents.title')}</h1>
+          <p className="purchase-subtitle">{t('userEvents.subtitle')}</p>
         </header>
         <div className="purchase-loading">
           <span className="loader neon-loader" aria-hidden />
-          <span>Loading events…</span>
+          <span>{t('userEvents.loading')}</span>
         </div>
       </div>
     )
@@ -44,8 +46,8 @@ export default function UserEvents() {
   return (
     <div className="purchase-page">
       <header className="purchase-header">
-        <h1 className="purchase-title text-glow-primary">Events</h1>
-        <p className="purchase-subtitle">Choose an event to browse stands</p>
+        <h1 className="purchase-title text-glow-primary">{t('userEvents.title')}</h1>
+        <p className="purchase-subtitle">{t('userEvents.subtitle')}</p>
       </header>
       {error && (
         <div className="purchase-error" role="alert">
@@ -54,7 +56,7 @@ export default function UserEvents() {
       )}
       <div className="purchase-grid">
         {events.length === 0 && !error && (
-          <p className="purchase-empty">No events available.</p>
+          <p className="purchase-empty">{t('userEvents.empty')}</p>
         )}
         {events.map((event) => (
           <Link

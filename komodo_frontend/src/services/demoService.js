@@ -9,4 +9,22 @@ export async function generateDemoActivity() {
   return data
 }
 
-export default { generateDemoActivity }
+/**
+ * POST /api/demo/flush/ — SuperAdmin only. Deletes all demo-generated orders and reverses wallet impact.
+ * @returns {Promise<{ orders_deleted: number, detail: string, errors?: string[] }>}
+ */
+export async function flushDemoData() {
+  const { data } = await api.post('/demo/flush/')
+  return data
+}
+
+/**
+ * POST /api/demo/flush-all/ — SuperAdmin only. Deletes ALL orders and ALL transactions, sets wallet balances to 0.
+ * @returns {Promise<{ orders_deleted: number, transactions_deleted: number, detail: string }>}
+ */
+export async function flushAllDemoData() {
+  const { data } = await api.post('/demo/flush-all/')
+  return data
+}
+
+export default { generateDemoActivity, flushDemoData, flushAllDemoData }

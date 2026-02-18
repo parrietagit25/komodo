@@ -53,10 +53,32 @@ export async function getFinancialOverview() {
   return data
 }
 
+/**
+ * GET /api/dashboard/project-status/ — SuperAdmin only
+ * Vision vs implemented vs pending (internal strategic overview).
+ * @returns {Promise<{ core_features: Array<{ feature: string, planned: boolean, implemented: boolean }> }>}
+ */
+export async function getProjectStatus() {
+  const { data } = await api.get(`${BASE}/project-status/`)
+  return data
+}
+
+/**
+ * GET /api/dashboard/investor-readiness/ — SuperAdmin only
+ * Overview, business model, risk assessment, readiness score (pitch-ready).
+ * @returns {Promise<{ overview, business_model, risk_assessment, readiness_score }>}
+ */
+export async function getInvestorReadiness() {
+  const { data } = await api.get(`${BASE}/investor-readiness/`)
+  return data
+}
+
 export default {
   getSuperAdminMetrics,
   getEventAdminMetrics,
   getStandAdminMetrics,
   getSalesChart,
   getFinancialOverview,
+  getProjectStatus,
+  getInvestorReadiness,
 }

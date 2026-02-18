@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useLanguage } from '../../context/LanguageContext'
 import {
   getOrganizations,
   createOrganization,
@@ -13,13 +14,14 @@ import OrganizationModal from './OrganizationModal'
 import './Organizations.css'
 
 export default function Organizations() {
+  const { t } = useLanguage()
   const [list, setList] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [actionLoading, setActionLoading] = useState(false)
-  const [confirm, setConfirm] = useState({ open: false, title: '', message: '', onConfirm: null, successMessage: '', confirmLabel: 'Deactivate', variant: 'danger' })
+  const [confirm, setConfirm] = useState({ open: false, title: '', message: '', onConfirm: null, successMessage: '', confirmLabel: '', variant: 'danger' })
 
   const fetchList = useCallback(async () => {
     setLoading(true)
@@ -33,13 +35,13 @@ export default function Organizations() {
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response?.data) : null) ||
         err.message ||
-        'Failed to load organizations'
+        t('organizations.failedLoad')
       setError(msg)
       setList([])
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     fetchList()
@@ -71,10 +73,10 @@ export default function Organizations() {
     try {
       if (editing) {
         await updateOrganization(editing.id, payload)
-        showSuccess('Organization updated')
+        showSuccess(t('organizations.updated'))
       } else {
         await createOrganization(payload)
-        showSuccess('Organization created')
+        showSuccess(t('organizations.created'))
       }
       handleCloseModal()
       await fetchList()
@@ -84,7 +86,7 @@ export default function Organizations() {
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response?.data) : null) ||
         err.message ||
-        'Request failed'
+        t('common.requestFailed')
       setError(msg)
     } finally {
       setActionLoading(false)
@@ -94,10 +96,10 @@ export default function Organizations() {
   const handleDeactivate = (org) => {
     setConfirm({
       open: true,
-      title: 'Deactivate organization',
-      message: `"${org.name}" will be hidden from the list.`,
-      confirmLabel: 'Deactivate',
-      successMessage: 'Organization deactivated',
+      title: t('organizations.deactivateTitle'),
+      message: `"${org.name}" ${t('organizations.deactivateMessage')}`,
+      confirmLabel: t('common.deactivate'),
+      successMessage: t('organizations.deactivateSuccess'),
       variant: 'danger',
       onConfirm: async () => {
         await deactivateOrganization(org.id)
@@ -120,11 +122,11 @@ export default function Organizations() {
     <div className="organizations-page">
       <header className="organizations-header">
         <div>
-          <h1 className="organizations-title text-glow-primary">Organizations</h1>
-          <p className="organizations-subtitle">Manage organizations, plans, and commission rates</p>
+          <h1 className="organizations-title text-glow-primary">{t('organizations.title')}</h1>
+          <p className="organizations-subtitle">{t('organizations.subtitle')}</p>
         </div>
         <Button variant="primary" className="btn-create-org" onClick={handleCreate}>
-          + Create Organization
+          {t('organizations.createOrgButton')}
         </Button>
       </header>
 
@@ -140,48 +142,48 @@ export default function Organizations() {
       <div className="organizations-card table-card border-glow">
         {loading ? (
           <TableSkeleton
-            columns={['Name', 'Plan', 'Commission', 'Status', 'Created', 'Actions']}
+            columns={[t('organizations.name'), t('organizations.plan'), t('organizations.commission'), t('common.status'), t('organizations.createdDate'), t('common.actions')]}
             rows={5}
             className="organizations-table-wrap"
           />
         ) : list.length === 0 ? (
           <div className="organizations-empty data-loaded-fade-in">
-            <p>No organizations yet.</p>
-            <Button variant="primary" onClick={handleCreate}>+ Create Organization</Button>
+            <p>{t('organizations.empty')}</p>
+            <Button variant="primary" onClick={handleCreate}>{t('organizations.createOrgButton')}</Button>
           </div>
         ) : (
           <div className="organizations-table-wrap table-mobile-cards data-loaded-fade-in">
             <table className="organizations-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Plan</th>
-                  <th>Commission</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                  <th className="th-actions">Actions</th>
+                  <th>{t('organizations.name')}</th>
+                  <th>{t('organizations.plan')}</th>
+                  <th>{t('organizations.commission')}</th>
+                  <th>{t('common.status')}</th>
+                  <th>{t('organizations.createdDate')}</th>
+                  <th className="th-actions">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {list.map((org) => (
                   <tr key={org.id}>
-                    <td className="cell-name" data-label="Name">{org.name}</td>
-                    <td data-label="Plan">{org.plan || '—'}</td>
-                    <td data-label="Commission">{org.commission_rate != null ? `${Number(org.commission_rate)}%` : '—'}</td>
-                    <td data-label="Status">
+                    <td className="cell-name" data-label={t('organizations.name')}>{org.name}</td>
+                    <td data-label={t('organizations.plan')}>{org.plan || '—'}</td>
+                    <td data-label={t('organizations.commission')}>{org.commission_rate != null ? `${Number(org.commission_rate)}%` : '—'}</td>
+                    <td data-label={t('common.status')}>
                       <span className={`status-badge status-${org.is_active ? 'active' : 'inactive'}`}>
-                        {org.is_active ? 'Active' : 'Inactive'}
+                        {org.is_active ? t('organizations.activeLabel') : t('organizations.inactiveLabel')}
                       </span>
                     </td>
-                    <td className="cell-muted" data-label="Created">{formatDate(org.created_at)}</td>
-                    <td className="cell-actions" data-label="Actions">
+                    <td className="cell-muted" data-label={t('organizations.createdDate')}>{formatDate(org.created_at)}</td>
+                    <td className="cell-actions" data-label={t('common.actions')}>
                       <button
                         type="button"
                         className="table-btn table-btn-edit"
                         onClick={() => handleEdit(org)}
                         disabled={actionLoading}
                       >
-                        Edit
+                        {t('organizations.edit')}
                       </button>
                       <button
                         type="button"
@@ -189,7 +191,7 @@ export default function Organizations() {
                         onClick={() => handleDeactivate(org)}
                         disabled={actionLoading}
                       >
-                        Deactivate
+                        {t('common.deactivate')}
                       </button>
                     </td>
                   </tr>

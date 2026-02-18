@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useLanguage } from '../../context/LanguageContext'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import { createOrder } from '../../services/orderService'
@@ -8,6 +9,7 @@ import { Button } from '../../components/Button'
 import './Purchase.css'
 
 export default function Checkout() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const { user } = useAuth()
   const { standId, standName, items, setQuantity, removeItem, totalAmount, clearCart, isEmpty } = useCart()
@@ -60,7 +62,7 @@ export default function Checkout() {
       setSubmitting(false)
       const detail = e.response?.data?.detail
       setError(
-        typeof detail === 'string' ? detail : (detail?.detail ?? e.message ?? 'Payment could not be completed. Please try again.')
+        typeof detail === 'string' ? detail : (detail?.detail ?? e.message ?? t('checkout.orderFailed'))
       )
     }
   }
@@ -72,11 +74,11 @@ export default function Checkout() {
   if (isEmpty) {
     return (
       <div className="checkout-page">
-        <h1 className="checkout-title text-glow-primary">Checkout</h1>
-        <p className="checkout-subtitle">Your cart is empty</p>
+        <h1 className="checkout-title text-glow-primary">{t('checkout.title')}</h1>
+        <p className="checkout-subtitle">{t('checkout.cartEmptySubtitle')}</p>
         <div className="checkout-empty">
-          <p>Add products from a stand to place an order.</p>
-          <p><Link to="/user/events">Browse events</Link></p>
+          <p>{t('checkout.addProductsMessage')}</p>
+          <p><Link to="/user/events">{t('checkout.goToEvents')}</Link></p>
         </div>
       </div>
     )
@@ -84,20 +86,20 @@ export default function Checkout() {
 
   return (
     <div className="checkout-page">
-      <h1 className="checkout-title text-glow-primary">Checkout</h1>
-      <p className="checkout-subtitle">Review and confirm your order</p>
+      <h1 className="checkout-title text-glow-primary">{t('checkout.title')}</h1>
+      <p className="checkout-subtitle">{t('checkout.reviewAndConfirm')}</p>
 
       {error && (
         <div className="checkout-error-card" role="alert">
           <p className="checkout-error-message">{error}</p>
           <Button variant="secondary" className="checkout-retry-btn" onClick={handleRetry}>
-            Try again
+            {t('checkout.tryAgain')}
           </Button>
         </div>
       )}
 
       <div className={`checkout-card ${submitting || paymentSuccess ? 'checkout-card-dimmed' : ''}`}>
-        {standName && <p className="checkout-stand-name">Stand: {standName}</p>}
+        {standName && <p className="checkout-stand-name">{t('checkout.stand')}: {standName}</p>}
         <ul className="checkout-list">
           {items.map((item) => (
             <li key={item.productId} className="checkout-item">
@@ -111,7 +113,7 @@ export default function Checkout() {
                   className="purchase-back"
                   onClick={() => setQuantity(item.productId, item.quantity - 1)}
                   disabled={item.quantity <= 1 || submitting}
-                  aria-label="Decrease"
+                  aria-label={t('checkout.decrease')}
                 >
                   −
                 </button>
@@ -121,7 +123,7 @@ export default function Checkout() {
                   className="purchase-back"
                   onClick={() => setQuantity(item.productId, item.quantity + 1)}
                   disabled={submitting}
-                  aria-label="Increase"
+                  aria-label={t('checkout.increase')}
                 >
                   +
                 </button>
@@ -131,9 +133,9 @@ export default function Checkout() {
                   onClick={() => removeItem(item.productId)}
                   style={{ marginLeft: '0.5rem' }}
                   disabled={submitting}
-                  aria-label="Remove"
+                  aria-label={t('checkout.remove')}
                 >
-                  Remove
+                  {t('checkout.remove')}
                 </button>
               </div>
               <span className="checkout-item-price">
@@ -143,18 +145,18 @@ export default function Checkout() {
           ))}
         </ul>
         <div className="checkout-total">
-          <span>Total</span>
+          <span>{t('checkout.total')}</span>
           <span className="text-glow-primary">${totalAmount.toFixed(2)}</span>
         </div>
 
         {paysWithWallet && walletBalance != null && (
           <div className="checkout-wallet-balance">
-            <span className="checkout-wallet-label">Wallet balance</span>
+            <span className="checkout-wallet-label">{t('checkout.walletBalance')}</span>
             <span className={`checkout-wallet-amount ${hasEnoughBalance ? 'text-glow-primary' : 'checkout-wallet-insufficient'}`}>
               ${walletBalance.toFixed(2)}
             </span>
             {!hasEnoughBalance && (
-              <span className="checkout-wallet-insufficient-text">Insufficient funds</span>
+              <span className="checkout-wallet-insufficient-text">{t('checkout.insufficientFunds')}</span>
             )}
           </div>
         )}
@@ -166,7 +168,7 @@ export default function Checkout() {
           loading={submitting}
           disabled={confirmDisabled}
         >
-          Confirm Order
+          {t('checkout.confirmOrder')}
         </Button>
       </div>
 
@@ -175,7 +177,7 @@ export default function Checkout() {
         <div className="checkout-overlay" role="status" aria-live="polite">
           <div className="checkout-overlay-content">
             <div className="checkout-spinner" aria-hidden />
-            <p className="checkout-overlay-text">Processing secure payment...</p>
+            <p className="checkout-overlay-text">{t('checkout.processingPayment')}</p>
           </div>
         </div>
       )}
@@ -190,8 +192,8 @@ export default function Checkout() {
                 <path className="checkout-checkmark-path" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
               </svg>
             </div>
-            <p className="checkout-overlay-text checkout-success-text">Payment successful!</p>
-            <p className="checkout-overlay-sub">Redirecting to orders...</p>
+            <p className="checkout-overlay-text checkout-success-text">{t('checkout.paymentSuccessful')}</p>
+            <p className="checkout-overlay-sub">{t('checkout.redirectingToOrders')}</p>
           </div>
         </div>
       )}

@@ -1,6 +1,5 @@
+import { useLanguage } from '../context/LanguageContext'
 import './OrderStatusBadge.css'
-
-const STATUS_VARIANTS = ['PENDING', 'PROCESSING', 'PAID', 'CANCELLED', 'CONFIRMED', 'COMPLETED']
 
 const VARIANT_MAP = {
   PENDING: 'pending',
@@ -11,6 +10,15 @@ const VARIANT_MAP = {
   CANCELLED: 'cancelled',
 }
 
+const LABEL_KEYS = {
+  PENDING: 'orders.pending',
+  CONFIRMED: 'orders.confirmed',
+  COMPLETED: 'orders.completed',
+  CANCELLED: 'orders.cancelled',
+  PROCESSING: 'orders.pending',
+  PAID: 'orders.completed',
+}
+
 function getVariant(status) {
   if (!status) return 'pending'
   const normalized = String(status).toUpperCase()
@@ -18,8 +26,10 @@ function getVariant(status) {
 }
 
 export default function OrderStatusBadge({ status }) {
+  const { t } = useLanguage()
   const variant = getVariant(status)
-  const label = status ? String(status).toUpperCase() : 'PENDING'
+  const key = status ? LABEL_KEYS[String(status).toUpperCase()] : 'orders.pending'
+  const label = key ? t(key) : (status || 'PENDING')
 
   return (
     <span

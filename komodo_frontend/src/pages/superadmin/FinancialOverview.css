@@ -47,6 +47,14 @@
   gap: 1.25rem;
 }
 
+/* Demo actions: Generate + Flush (side by side) */
+.financial-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
 /* Generate Demo Activity — neon accent, premium dark fintech */
 .financial-demo-btn {
   flex-shrink: 0;
@@ -61,6 +69,26 @@
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.25s ease, opacity 0.2s ease, filter 0.2s ease;
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.25);
+}
+
+.financial-flush-btn {
+  background: linear-gradient(135deg, #FF3366 0%, #cc2952 100%);
+  border-color: rgba(255, 51, 102, 0.5);
+  box-shadow: 0 0 20px rgba(255, 51, 102, 0.25);
+}
+
+.financial-flush-btn:hover:not(:disabled) {
+  box-shadow: 0 0 28px rgba(255, 51, 102, 0.4), 0 0 40px rgba(255, 51, 102, 0.15);
+}
+
+.financial-flush-all-btn {
+  background: linear-gradient(135deg, #F59E0B 0%, #d97706 100%);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+}
+
+.financial-flush-all-btn:hover:not(:disabled) {
+  box-shadow: 0 0 28px rgba(245, 158, 11, 0.4), 0 0 40px rgba(245, 158, 11, 0.15);
 }
 
 .financial-demo-btn:hover:not(:disabled) {

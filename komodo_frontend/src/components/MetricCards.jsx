@@ -1,3 +1,4 @@
+import { useLanguage } from '../context/LanguageContext'
 import './MetricCards.css'
 
 const formatCurrency = (value) => {
@@ -45,6 +46,7 @@ export function MetricCards({
   loading = false,
   error = null,
 }) {
+  const { t } = useLanguage()
   if (error) {
     return (
       <div className="metric-cards-error" role="alert">
@@ -55,16 +57,16 @@ export function MetricCards({
 
   return (
     <div className="metric-cards-grid">
-      <MetricCard label="Total Sales" value={totalSales} loading={loading} />
+      <MetricCard label={t('dashboard.totalSales')} value={totalSales} loading={loading} />
       {showCommission && (
-        <MetricCard label="Commission Earned" value={commissionEarned} loading={loading} />
+        <MetricCard label={t('dashboard.commissionEarned')} value={commissionEarned} loading={loading} />
       )}
       <MetricCard
-        label={netReceived != null ? 'Net Received' : 'Net Distributed'}
+        label={netReceived != null ? t('dashboard.netReceived') : t('dashboard.netDistributed')}
         value={netReceived != null ? netReceived : netDistributed}
         loading={loading}
       />
-      <MetricCard label="Orders Today" value={ordersToday} format="number" loading={loading} />
+      <MetricCard label={t('dashboard.ordersToday')} value={ordersToday} format="number" loading={loading} />
     </div>
   )
 }
