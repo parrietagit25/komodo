@@ -1,0 +1,2 @@
+# Scripts shell: siempre LF para que funcionen en Linux al hacer pull
+*.sh text eol=lf

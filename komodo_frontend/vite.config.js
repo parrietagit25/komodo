@@ -1,6 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import path from 'path'
+import fs from 'fs'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const certDir = path.join(__dirname, 'certs')
+const hasCert = fs.existsSync(path.join(certDir, 'cert.pem')) && fs.existsSync(path.join(certDir, 'key.pem'))
 
 export default defineConfig({
   plugins: [
@@ -40,5 +47,22 @@ export default defineConfig({
       devOptions: { enabled: true },
     }),
   ],
-  server: { port: 5173 },
+  server: {
+    port: 5173,
+    host: true,
+    // HTTPS con certificado autofirmado si existe komodo_frontend/certs/
+    ...(hasCert && {
+      https: {
+        key: fs.readFileSync(path.join(certDir, 'key.pem')),
+        cert: fs.readFileSync(path.join(certDir, 'cert.pem')),
+      },
+    }),
+    // Proxy /api al backend para evitar contenido mixto (HTTPS → HTTP)
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_PROXY_TARGET || 'http://127.0.0.1:8001',
+        changeOrigin: true,
+      },
+    },
+  },
 })
