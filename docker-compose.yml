@@ -32,7 +32,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-komodo}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-komodo}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-secret-key}
-      ALLOWED_HOSTS: 143.198.156.0,koko71.grupopcr.com.pa
     depends_on:
       db:
         condition: service_healthy
